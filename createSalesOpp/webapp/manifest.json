@@ -48,16 +48,17 @@
 			"async": true,
 			"id": "app"
 		},
+
 		"resourceRoots":{
 			"com.bayer.tender.uilib": "./libraries/uilib/src/com/bayer/tender/uilib"
 		},
+
 		"dependencies": {
 			"minUI5Version": "1.66.0",
 			"libs": {
 				"sap.ui.core": {},
 				"sap.m": {},
-				"sap.f": {},
-				"com.bayer.tender.uilib":{}
+				"sap.f": {}
 			}
 		},
 

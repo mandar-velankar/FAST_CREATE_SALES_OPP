@@ -81,6 +81,10 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+			this.soaState.loadCountryChannels("CL");
+			this.soaState.loadCountryClassifications("CL");
+			this.soaState.loadCountryTenderTypes("CL");
 			
 		},
 
@@ -315,10 +319,23 @@ sap.ui.define([
 			var bReplace = !Device.system.phone;
 			// set the layout property of FCL control to show two columns
 			// this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+			this.soaState.setEditMode(false);
+
 			this.getRouter().navTo("object", {
 				objectId: oItem.getBindingContext().getProperty("ID"),
 				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
+		},
+
+		onAdd: function (){
+			this.soaState.setEditMode(true);
+			var bReplace = !Device.system.phone;
+
+			this.getRouter().navTo("object", {
+				objectId: this.soaState.getNewUUID(),
+				layout: "TwoColumnsMidExpanded"
+			}, bReplace);
+
 		},
 
 		/**

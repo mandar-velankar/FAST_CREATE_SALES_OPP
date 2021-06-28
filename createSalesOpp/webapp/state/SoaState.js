@@ -31,9 +31,14 @@ sap.ui.define([
 		},
 
 		setEditMode: function (sEditMode){
-			sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
+			//sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
 			this.setProperty("editMode", sEditMode);
 		},
+
+		getEditMode: function (){
+			return this.getProperty("editMode");
+		},
+
 		restoreBackup:function(){
 			this.backupOpportunity && this.setSelectedOpportunity(this.createOpportunity(this.backupOpportunity));
 		},
@@ -105,6 +110,11 @@ sap.ui.define([
             this.detailPage = oDetailPage;
 		},
 		
+		getNewUUID: function() {
+			return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+			  (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+			);
+		},
 
 		//sorting an array of objects
 		sortByKeyAsc: function (array, key) {
@@ -116,6 +126,26 @@ sap.ui.define([
 				});
 			}
 
+		},
+
+		loadCountryChannels: async function(sCountry){
+			const aCountryChannels = await this.getService().loadCountryChannels(sCountry);
+			this.setProperty("CountryChannels", aCountryChannels.data.results);
+		},
+
+		loadCountryClassifications: async function(sCountry){
+			const aCountryClassifications = await this.getService().loadCountryClassifications(sCountry);
+			this.setProperty("CountryClassifications", aCountryClassifications.data.results);
+		},
+
+		loadCountryTenderTypes: async function(sCountry){
+			const aCountryTenderTypes = await this.getService().loadCountryTenderTypes(sCountry);
+			this.setProperty("CountryTenderTypes", aCountryTenderTypes.data.results);
+		},
+
+		loadCountryInstitutes: async function(sCountry, sInstituteType){
+			const aCountryInstitutes = await this.getService().loadCountryInstitutes(sCountry, sInstituteType);
+			this.setProperty("CountryInstitutes", aCountryInstitutes.data.results);
 		},
 
 		/* UI helpers */

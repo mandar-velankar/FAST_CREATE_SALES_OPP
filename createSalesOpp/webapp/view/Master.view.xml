@@ -40,7 +40,9 @@
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
-					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onOpenViewSettings"/>
+					<!-- Button for adding a new tender -->
+					<Button icon="sap-icon://add" text="Create New" press=".onAdd"/>
+					<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
 				<Table
 						id="list"

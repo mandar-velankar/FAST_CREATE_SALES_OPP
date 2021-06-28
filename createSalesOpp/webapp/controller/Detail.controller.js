@@ -106,6 +106,7 @@ sap.ui.define([
 			// removes the selection of the products table. This is needed to always be able to click on the item.
 			this.byId("ProductsTableID").removeSelections();
 
+			this.oObjectPageLayout.setShowFooter(this.soaState.getEditMode());
 			this.sObjectId = oEvent.getParameter("arguments").objectId;
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
@@ -146,8 +147,10 @@ sap.ui.define([
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
 			// expand Comprador and Items
-			selectedObj["Institute"] = selectedObj.Institute && this.getView().getModel().getObject(`/${selectedObj.Institute.__ref}`);
-			selectedObj["Products"]["results"] = selectedObj.Products && selectedObj.Products.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+			if(selectedObj){
+				selectedObj["Institute"] = selectedObj.Institute && this.getView().getModel().getObject(`/${selectedObj.Institute.__ref}`);
+				selectedObj["Products"]["results"] = selectedObj.Products && selectedObj.Products.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+			}
 
 			return this.soaState.createOpportunity(selectedObj);
 
@@ -225,6 +228,7 @@ sap.ui.define([
 			this.getOwnerComponent().oListSelector.clearMasterListSelection();
 			this.getRouter().navTo("master");
 			this.soaState.clearSelectedOpportunity();
+			this.soaState.setEditMode(false);
 		},
 
 		/**
@@ -278,9 +282,9 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: async function () {
+		onFooterSavePress: async function () {
 
-			const oTender = this.soaState.getNewTender();
+			const oTender = this.soaState.createOpportunity();
 			var that = this;
 
 			if (this._validateNewTender(oTender)) {

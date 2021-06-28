@@ -107,29 +107,46 @@
 							<form:content>
 								<core:Title text="Opportunity Details &amp; Type"/>
 								<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
-								<m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} === false ? true : false }"/>
+								<m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/>
 
 								<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+								<m:Select id="idClassification" selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
+									<core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
+								</m:Select>
+
+								<m:Label text="{i18n>insttyp}" design="Bold" required="true"/>
+								<m:Select id="idInstituteType" selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="{= ${soa>/editMode} }" items="{path: 'soa>/CountryChannels' }">
+										<core:Item text="{soa>ChannelName}" key="{soa>ChannelName}"/>
+								</m:Select>
+
+								<m:Label text="{i18n>institnme}" design="Bold" required="true"/>
+								<!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
+								<m:Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/newTender/instituteName}" enabled="{= ${soa>/editMode} }"/>
+
 
 								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/tenderChannel}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+								<m:Select id="idTenderChannel" selectedKey="{soa>/selectedOpportunity/tenderChannel}" enabled="{= ${soa>/editMode} }" change="onTenderChannelChange">
+									<m:items>
+										<core:Item text="Distributor" key="Distributor"/>
+										<core:Item text="Direct" key="Direct"/>
+									</m:items>
+								</m:Select>
 
 								<core:Title text="Timeline"/>
 								<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>offrdudte}" design="Bold" required="true"/>
-								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/offerDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/offerDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>nwpubdate}" design="Bold" required="true"/>
-								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/nextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/nextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>contractLength}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/contractLength}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+								<m:Input  value="{soa>/selectedOpportunity/contractLength}"  enabled="{= ${soa>/editMode} }" />
 
 								<m:Label text="{i18n>contractExtension}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/extensionPeriod}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+								<m:Input  value="{soa>/selectedOpportunity/extensionPeriod}"  enabled="{= ${soa>/editMode} }" />
 
 							</form:content>
 					</form:SimpleForm>
