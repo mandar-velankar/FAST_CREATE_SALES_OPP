@@ -1,0 +1,21 @@
+{
+	"name": "CREATE_SALES_OPP",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Create Sales Opportunity",
+	"scripts": {
+		"setup": "cd createSalesOpp && npm install",
+		"start:app": "cd createSalesOpp && PORT=5002 npm start",
+		"start:local": "cd createSalesOpp && npm run start:local",
+		"build:xsa": "mbt build -p=xsa --mtar=FASTCAP-createSalesOpp-Frontend.mtar",
+		"build:cf": "mbt build -p=cf --mtar=FASTCAP-createSalesOpp-Frontend-CF.mtar",
+		"deploy:cf": "cf deploy mta_archives/FASTCAP-createSalesOpp-Frontend-CF.mtar -e cf.mtaext"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"mbt": "~1.0.17"
+	},
+	"engines": {
+		"node": "^12"
+	}
+}

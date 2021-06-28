@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="Institutes"
+		items="{soa>/CountryInstitutes}"
+		search="_handleValueHelpSearch"
+		confirm="_handleValueHelpClose"
+		cancel="_handleValueHelpClose">
+		<StandardListItem
+			title="{soa>InstituteName}"
+			description="{soa>InstituteID}" />
+	</SelectDialog>
+</core:FragmentDefinition>

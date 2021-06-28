@@ -1,0 +1,244 @@
+<mvc:View
+	controllerName="com.bayer.tender.createsalesopportunity.controller.Detail"
+	xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" 
+	xmlns:viz="sap.viz.ui5.controls" 
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:tnt="sap.tnt">
+
+	<!-- ObjectPage Layout -->
+	<ObjectPageLayout 
+		id="DetailPage" 
+		showTitleInHeaderContent="true" 
+		alwaysShowContentHeader="true" 
+		preserveHeaderStateOnScroll="false"
+		headerContentPinnable="true" 
+		isChildPage="true" 
+		toggleHeaderOnTitleClick="true" 
+		showFooter="false" 
+		upperCaseAnchorBar="false"
+		enableLazyLoading="false" 
+		useIconTabBar="true" 
+		navigate=".onSectionNavigate"
+		selectedSection="basicInformationId"
+		showAnchorBarPopover="false">
+
+	<headerTitle>
+			<ObjectPageDynamicHeaderTitle>
+				
+				<!-- Heading part that is used when heading is not collapsed -->
+				<expandedHeading>
+					<m:Title text="{fastData>TenderID}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
+				</expandedHeading>
+
+				<!-- WINDOW ACTIONS -->
+				<navigationActions>
+					<m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen"
+						tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+					<m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen"
+						tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"/>
+					<m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".onCloseDetailPress" tooltip="Close column"
+						visible="true"/>
+				</navigationActions>
+				
+				<!-- ACTIONS -->
+				<actions>
+					<m:Button id="participateButtonId" icon="sap-icon://action" text="{= ${soa>/selectedOpportunity/mainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" />
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
+				</actions>
+				
+			</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
+
+		<headerContent>
+			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+				
+				<!-- LOGO 
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"></f:Avatar>
+				-->
+				
+				<!-- INSTITUTE INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Code"/>
+					<m:Text id="idhdrInstNme" text="{soa>/selectedOpportunity/tenderReference}"/>
+				</m:VBox>
+
+				<!-- SELECTED CONTRACT -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Name"/>
+					<m:Text  text="{soa>/selectedOpportunity/name}"/>
+				</m:VBox>
+
+				<!-- SELECTED CONTRACT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Institute"/>
+					<m:Text text="{soa>/selectedOpportunity/institute/organismNumber}"/>
+				</m:VBox>				
+				
+				<!-- SELECTED PRODUCT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Closing Date"/>
+					<m:Text text="{
+										path: 'soa>/selectedOpportunity/closingDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+				</m:VBox>	
+			</m:FlexBox>
+		</headerContent>
+
+		<sections>
+			<!-- OPPORTUNITY INFORMATION TAB -->
+			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
+					<ObjectPageSubSection mode="Expanded" title="">
+						<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+										singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
+							<form:content>
+								<core:Title text="Opportunity Details &amp; Type"/>
+								<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
+								<m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} === false ? true : false }"/>
+
+								<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
+								<m:Input  value="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+
+								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
+								<m:Input  value="{soa>/selectedOpportunity/tenderChannel}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+
+								<core:Title text="Timeline"/>
+								<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+								<m:Label text="{i18n>offrdudte}" design="Bold" required="true"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/offerDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+								<m:Label text="{i18n>nwpubdate}" design="Bold" required="true"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/nextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+								<m:Label text="{i18n>contractLength}" design="Bold" required="true"/>
+								<m:Input  value="{soa>/selectedOpportunity/contractLength}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+
+								<m:Label text="{i18n>contractExtension}" design="Bold" required="true"/>
+								<m:Input  value="{soa>/selectedOpportunity/extensionPeriod}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
+
+							</form:content>
+					</form:SimpleForm>
+					</ObjectPageSubSection>
+			</ObjectPageSection>
+
+			<!-- OPPORTUNITY PRODUCTS TAB -->
+			<ObjectPageSection id="opportunityProductsId" title="Products"  visible="true">
+					<ObjectPageSubSection mode="Expanded">
+						<m:VBox fitContainer="true">
+							<m:Table id="ProductsTableID" 
+										mode="SingleSelectMaster"
+										delete="onDeleteProduct"
+										selectionChange=".onProductItemSelect"
+										items="{
+											path: 'soa>/selectedOpportunity/products',
+											sorter: { path: 'matchedProductName', descending: true} 
+									}"
+							>
+								<m:columns>
+									<m:Column >
+										<m:Label text="Brand ID" wrapping="true"/>  
+									</m:Column>
+									<!--<m:Column >
+										<m:Label text="Code" wrapping="true"/>  
+									</m:Column>
+									<m:Column >
+										<m:Label text="Product" wrapping="true"/> 
+									</m:Column>
+									<m:Column >
+										<m:Label text="UoM" wrapping="true"/>
+									</m:Column>
+									<m:Column>
+										<m:Label text="Quantity" wrapping="true"/> 
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+										<m:Label text="SupplierAwardName" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="AwardAmount" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="AwardCurrency" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="Matched" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="Matched Product" wrapping="true"/>
+									</m:Column>-->
+								</m:columns>
+								<m:items>
+									<m:ColumnListItem id="productTableListID" 
+										type="Navigation"
+										press="onProductItemSelect"
+										detailPress="onProductItemSelect">
+										<m:cells>
+											<m:Text text="{soa>brandID}"/>
+											<!--<m:Text text="{soa>productCode}"/>
+											<m:Text id="productNameId" text="{soa>productName}"/> 
+											<m:Text text="{soa>uoM}"/>
+											<m:Text id="productQtyId" text="{soa>quantity}"/> 
+											<m:Text text="{soa>supplierAwardName}"/>
+											<m:Text text="{soa>awardAmount}"/>
+											<m:Text text="{soa>awardCurrency}"/>
+											<tnt:InfoLabel
+												text="{= ${soa>matchedProductName}.length > 0 ? 'Yes' : 'No'}"
+												displayOnly="true"
+												colorScheme= "{
+													parts: [
+														{path: 'soa>matchedProductName'}
+													],
+													formatter: '.formatter.productMachedState'
+												}" 
+											/>
+											<m:Text text="{soa>matchedProductName}"/>-->
+										</m:cells>
+									</m:ColumnListItem>
+								</m:items>
+							</m:Table>
+						</m:VBox> 
+					</ObjectPageSubSection>
+					<!-- FORM WITH EXTRA DATA -->
+					<ObjectPageSubSection id="idProductDetailSection" title="Product Details" visible="{detailView>/isProductDetailVisible}">
+						<blocks>
+							<m:VBox width="100%">
+								<form:SimpleForm  editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
+									class="editableForm" visible="true">
+									<form:content>
+										<m:Label text="SupplierAwardID" />
+										<m:Text text="{soa>supplierAwardID}"/>
+										<m:Label text="Comment" />
+										<m:TextArea value="{soa>description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+									</form:content>
+								</form:SimpleForm>
+							</m:VBox>
+						</blocks>
+					</ObjectPageSubSection>
+			</ObjectPageSection>
+		</sections>
+
+		<!-- footer bar-->
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer />
+				<m:Button type="Accept" text="Save" press="onFooterSavePress()"/>
+				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress()"/>
+			</m:OverflowToolbar>
+		</footer>
+	</ObjectPageLayout>
+
+</mvc:View>

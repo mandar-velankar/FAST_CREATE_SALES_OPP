@@ -1,0 +1,154 @@
+<mvc:View
+	controllerName="com.bayer.tender.createsalesopportunity.controller.Master"
+	xmlns="sap.m"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:f="sap.f"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core">
+
+	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="{masterView>/title}"/>
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+
+		<!-- DynamicPage Content -->
+		<f:content>
+			<VBox fitContainer="true">
+			<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<!-- Filter for Status -->
+					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="" text=""/>
+							<core:Item key="In" text="In"/>
+							<core:Item key="Out" text="Out"/>
+							<core:Item key="Participated" text="Participated"/>
+					</Select>
+
+					<!-- Filter for Substatus -->
+					<!-- <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="" text=""/>
+							<core:Item key="NA" text="NA"/>
+							<core:Item key="Draft" text="Draft"/>
+							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
+							<core:Item key="Won" text="Won"/>
+							<core:Item key="Lost" text="Lost"/>
+					</Select> -->
+					<ToolbarSpacer/>
+					
+					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
+					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onOpenViewSettings"/>
+				</OverflowToolbar>
+				<Table
+						id="list"
+						inset="false"
+						items="{
+							path: '/SalesOpportunities',
+							sorter: {
+								path: 'TenderReference',
+								descending: false
+							},
+							parameters: {
+								expand: 'Products,Institute'
+							}
+						}"
+						class="sapFDynamicPageAlignContent"
+						width="auto"
+						updateFinished=".onUpdateFinished"
+						alternateRowColors="true"
+						contextualWidth="Auto" 
+						popinLayout="Block"
+						growing="true"
+						growingThreshold="15"
+						growingScrollToLoad="false">
+					<columns>
+						<Column width="10%" visible="true">
+							<header>
+								<ObjectIdentifier title="{i18n>tenderref}" />
+							</header>
+						</Column>
+						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
+							<header>
+								<ObjectIdentifier title="{i18n>clasficn}" />
+							</header>
+						</Column>
+						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>typechnl}" />
+							</header>
+						</Column>
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>pubcndte}" />
+							</header>
+						</Column>
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>offrdudte}" />
+							</header>
+						</Column>
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>nwpubdate}" />
+							</header>
+						</Column>
+						<Column width="8%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>contractLength}" />
+							</header>
+						</Column>
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>contractExtension}" />
+							</header>
+						</Column>
+						<Column width="5%" minScreenWidth="Desktop" demandPopin="false" popinDisplay="Inline">
+							<header>
+								<Label text=""/>
+							</header>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">
+							<cells>
+								<Text text="{TenderReference}"/>
+								<Text text="{Classification}"/>
+								<Text text="{TenderChannel}"/>
+								<Text text="{
+										path: 'PublicationDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{
+										path: 'OfferDueDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{
+										path: 'NextPublicationDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{ContractLength}"/>
+								<Text text="{ExtensionPeriod}"/>
+								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

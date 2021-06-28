@@ -1,0 +1,127 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+
+	<Dialog title="Participate on Opportunity" stretch="true">
+		<buttons>
+			<Button text="Save" press="onSaveParticipation" />
+			<Button text="Cancel" press="onCancelParticipation" />
+		</buttons>
+
+            <VBox>
+                <form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+                        adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+                        singleContainerFullSize="false" backgroundDesign="Solid">
+                    <form:content>
+                        <core:Title text="Institute &amp; Type"/>
+                        <Label text="Tender ID" design="Bold" required="true"/>
+                        <Input id="newTenderIdID" value="{soa>/newTender/tenderID}" enabled="false"/>
+                        <Label text="Tender Reference" design="Bold" required="true"/>
+                        <Input id="idTenderName" value="{soa>/newTender/tenderName}" />
+                        <Label text="{i18n>clasficn}" design="Bold" required="true"/>
+                        <Select id="idClassification" selectedKey="{soa>/newTender/classification}" enabled="true" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
+                            <core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
+                        </Select>
+                        <Label text="{i18n>insttyp}" design="Bold" required="true"/>
+                        <Select id="idInstituteType" selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="true" items="{path: 'soa>/CountryChannels' }">
+                                <core:Item text="{soa>ChannelName}" key="{soa>ChannelName}"/>
+                        </Select>
+
+                        <Label text="{i18n>institnme}" design="Bold" required="true"/>
+                        <!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
+                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/newTender/instituteName}" enabled="true"/>
+
+                        <Label text="{i18n>typechnl}" design="Bold" required="true"/>
+                        <Select id="idTenderChannel" selectedKey="Direct" enabled="false" change="onTenderChannelChange">
+                            <items>
+                                <core:Item text="Distributor" key="Distributor"/>
+                                <core:Item text="Direct" key="Direct"/>
+                            <!--	<core:Item text="Other" key="Other"/>-->
+                            </items>
+                        </Select>
+
+                        <Label id="idLabelTenderTypeEdit" text="{i18n>tendertype}" design="Bold" required="true" visible="{= ${soa>/newTender/instituteType} === 'Cenabast' ? true : false }"/>
+                        <Select id="idSelectTenderTypeEdit" 
+                                selectedKey="{soa>/newTender/tENDER_TYPE_ID}" 
+                                enabled="true" 
+                                items="{path: 'soa>/CountryTenderTypes' }"
+                                visible="{= ${soa>/newTender/instituteType} === 'Cenabast' ? true : false }">
+                            <core:Item text="{soa>TenderType/NAME}" key="{soa>TenderType/ID}"/>
+                        </Select>
+
+                        <core:Title text="Timeline"/>
+                        <Label text="Publication Date" design="Bold" required="true"/>
+                        <DatePicker id="idPublicationDate" value="{path :'soa>/newTender/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+                        <Label text="{i18n>offrdudte}" design="Bold" required="true"/>
+                        <DatePicker id="idBidDueDate" value="{path :'soa>/newTender/bidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+                        <Label text="{i18n>expctawdte}" design="Bold"/>
+                        <DatePicker id="idAwardDate" value="{path :'soa>/newTender/awardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+                        <Label text="{i18n>nwpubdate}" design="Bold"/>
+                        <DatePicker id="idNextPublicationDye" value="{path :'soa>/newTender/nextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+
+                        <Label text="Contract Length [months]" design="Bold"/>
+                        <Input id="idContractLength" value="{soa>/newTender/contractDurationTime}" type="Number" />
+                        <Label text="Extension Period [months]" design="Bold"/>
+                        <Input id="idContractExtenseion" value="{soa>/newTender/termExtension}" type="Number" />
+
+                        <!-- Block - Award criteria -->
+                       <!--  <core:Title text="Award Criteria" id="idAwrdTitle"/>
+                        <Grid xmlns="sap.ui.layout" defaultSpan="L12 M12 S12">
+                            <content>
+                                <Table xmlns="sap.m" id="idAwrdEdit" items="{tabModel>/Data}">
+                                    <columns>
+                                        <Column minScreenWidth="Tablet" demandPopin="true" width="4em">
+                                            <Label text="Criteria"/>
+                                        </Column>
+                                        <Column minScreenWidth="Tablet" demandPopin="true" width="4em">
+                                            <Label text="Weight"/>
+                                        </Column>
+                                        <Column minScreenWidth="Tablet" demandPopin="true" width="2em"></Column>
+                                        <Column minScreenWidth="Tablet" demandPopin="true" width="2em"></Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem type="Inactive">
+                                            <cells>
+                                                <Input value="{tabModel>AwardCriteria}" placeholder="{i18n>addCriteria}" enabled="{= ${tabModel>TENDERID} === ''}"/>
+                                                <Input value="{
+                                                    path:'tabModel>Weight', 
+                                                    formatter:'FAST_NS0FAST0.utils.Formatter.percentageNoUnit',
+                                                    constraints : {
+                                                        minimum: '0',
+                                                        maximum: '99'
+                                                    }}" description="%" type="Number" placeholder="{i18n>addWeight}" maxLength="3"/>
+                                                <Button xmlns="sap.m" icon="sap-icon://delete" type="Emphasized" press="handleDelete"/>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                                <Button xmlns="sap.m" icon="sap-icon://add" text="{i18n>Add}" type="Emphasized" press="onAddPressAwrd"/>
+                            </content>
+                        </Grid>-->
+                    </form:content>
+                </form:SimpleForm>
+
+                <!-- Tender Information Only for Chile-->
+                <form:SimpleForm id="idTenderInformationSimpleForm" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+                    adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+                    singleContainerFullSize="false" backgroundDesign="Solid" visible="true">
+                    <form:content>
+                        <core:Title text="{i18n>mercadoPublico}" />
+                        <Label />
+                        <Button xmlns="sap.m" icon="sap-icon://document" text="{i18n>btnDocuments}" type="Emphasized" width="9em" press="onDocumentsPress"/>
+                        <Label text="{i18n>issuer}" design="Bold"/>
+                        <Input value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="false"/>
+                        <Label text="{i18n>mercadoPublicoCode}" design="Bold"/>
+                        <Input value="{soa>/selectedOpportunity/codigoExterno}" enabled="false"/>
+                        <Label text="{i18n>openingDate}" design="Bold" required="true"/>
+                        <DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+                        <Label text="{i18n>ClosingDate}" design="Bold" required="true"/>
+                        <DatePicker  enabled="false" value="{path :'soa>/selectedOpportunity/closingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+                    </form:content>
+                </form:SimpleForm>
+            </VBox>
+   	</Dialog>	
+</core:FragmentDefinition>

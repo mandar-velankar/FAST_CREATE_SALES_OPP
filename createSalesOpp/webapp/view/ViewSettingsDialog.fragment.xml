@@ -1,0 +1,50 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+
+	<ViewSettingsDialog
+		id="viewSettingsDialog"
+		confirm=".onConfirmViewSettingsDialog">
+		<sortItems>
+			<ViewSettingsItem
+				text="{i18n>Tender Reference}"
+				key="TenderReference"
+				selected="true"/>
+			<ViewSettingsItem
+				text="{i18n>Classification}"
+				key="Classification"/>
+			<ViewSettingsItem
+				text="{i18n>Tender Channel}"
+				key="TenderChannel"/>
+		</sortItems>
+		<filterItems>
+			<ViewSettingsFilterItem
+				id="filterItems"
+				text="Tender Channel"
+				multiSelect="false">
+				<items>
+					<ViewSettingsItem
+						id="distributor"
+						text="{i18n>Distributor}"
+						key="distributor"/>
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem
+				id="filterItems2"
+				text="Classification"
+				multiSelect="false">
+				<items>
+					<ViewSettingsItem
+						id="rfq"
+						text="{i18n>RFQ}"
+						key="rfq"/>
+				</items>
+			</ViewSettingsFilterItem>
+		</filterItems>
+		<groupItems>
+			<ViewSettingsItem
+				text="{i18n>Tender Channel}"
+				key="TenderChannel"/>
+		</groupItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

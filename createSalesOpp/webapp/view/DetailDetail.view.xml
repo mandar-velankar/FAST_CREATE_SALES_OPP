@@ -1,0 +1,65 @@
+<mvc:View
+	controllerName="com.bayer.tender.createsalesopportunity.controller.DetailDetail"
+	xmlns="sap.f"
+	xmlns:m="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:form="sap.ui.layout.form">
+	<DynamicPage id="idDynamicPage" toggleHeaderOnTitleClick="false">
+		<title>
+			<DynamicPageTitle>
+				<heading>
+					<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Center">
+						<m:Title text="{products>text}" wrapping="true" class="sapUiTinyMarginEnd"/>
+					</m:FlexBox>
+				</heading>
+
+				<!-- ACTIONS -->
+				<actions>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
+				</actions>
+
+				<navigationActions>
+					<m:OverflowToolbarButton
+						type="Transparent"
+						icon="sap-icon://full-screen"
+						press=".handleFullScreen"
+						tooltip="Enter Full Screen Mode"
+						visible="{= !${detailDetailView>/actionButtonsInfo/fullScreen}}"/>
+					<m:OverflowToolbarButton
+						type="Transparent"
+						icon="sap-icon://exit-full-screen"
+						press=".handleExitFullScreen"
+						tooltip="Exit Full Screen Mode"
+						visible="{= ${detailDetailView>/actionButtonsInfo/fullScreen}}"/>
+					<m:OverflowToolbarButton
+						type="Transparent"
+						icon="sap-icon://decline"
+						press=".handleClose"
+						tooltip="Close column"
+						visible="{= ${detailDetailView>/actionButtonsInfo/endColumn/closeColumn} !== null }"/>
+				</navigationActions>
+			</DynamicPageTitle>
+		</title>
+		<content>
+			<m:VBox width="100%">
+				<form:SimpleForm  editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
+					class="editableForm" visible="true">
+					<form:content>
+						<m:Label text="Brand" />
+						<m:Text text="{soa>/selectedProduct/brandID}"/>
+						<m:Label text="Comment" />
+						<m:TextArea value="{soa>/selectedProduct/comment}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+					</form:content>
+				</form:SimpleForm>
+			</m:VBox>
+		</content>
+		<!-- footer bar-->
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer />
+				<m:Button type="Accept" text="Save" press=".onFooterSavePress()"/>
+				<m:Button type="Reject" text="Cancel" press=".onFooterCancelPress()"/>
+			</m:OverflowToolbar>
+		</footer>
+	</DynamicPage>
+</mvc:View>
