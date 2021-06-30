@@ -52,6 +52,7 @@ sap.ui.define([
 
         getJSON: function () {
             return this.getJSONObject([
+                "iD",
                 "tenderReference",
                 "classification",
                 "tenderChannel",

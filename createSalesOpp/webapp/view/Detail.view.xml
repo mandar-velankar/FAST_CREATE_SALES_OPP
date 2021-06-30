@@ -252,8 +252,8 @@
 		<footer>
 			<m:OverflowToolbar>
 				<m:ToolbarSpacer />
-				<m:Button type="Accept" text="Save" press="onFooterSavePress()"/>
-				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress()"/>
+				<m:Button type="Accept" text="Save" press="onFooterSavePress"/>
+				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress"/>
 			</m:OverflowToolbar>
 		</footer>
 	</ObjectPageLayout>

@@ -48,7 +48,7 @@ sap.ui.define([
 			const data = opportunity.getAll();
 
 			const sKey = this.model.createKey("/SalesOpportunities", {
-				ID: data.iD
+				ID: data.ID
 			});
 
 			return this.odata(sKey).put(data);

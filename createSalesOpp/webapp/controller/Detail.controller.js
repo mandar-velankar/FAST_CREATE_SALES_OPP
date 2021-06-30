@@ -145,6 +145,9 @@ sap.ui.define([
 		createStateObject: function (sObjectPath) {
 
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
+			if(!selectedObj){
+				return this.soaState.getSelectedOpportunity(); //we're handling a new opportunity
+			}
 
 			// expand Comprador and Items
 			if(selectedObj){
@@ -156,55 +159,7 @@ sap.ui.define([
 
 		},
 
-		// _onBindingChange : function () {
-		// 	var oView = this.getView(),
-		// 		oElementBinding = oView.getElementBinding();
-
-		// 	// No data for the binding
-		// 	if (!oElementBinding.getBoundContext()) {
-		// 		this.getRouter().getTargets().display("detailObjectNotFound");
-		// 		// if object could not be found, the selection in the master list
-		// 		// does not make sense anymore.
-		// 		this.getOwnerComponent().oListSelector.clearMasterListSelection();
-		// 		return;
-		// 	}
-
-		// 	var sPath = oElementBinding.getPath();
-		// 		// oResourceBundle = this.getResourceBundle(),
-		// 		// oObject = oView.getModel().getObject(sPath),
-		// 		// sObjectId = oObject.CodigoExterno,
-		// 		// sObjectName = oObject.Nombre,
-		// 		// oViewModel = this.getModel("detailView");
-
-		// 	this.getOwnerComponent().oListSelector.selectAListItem(sPath);
-
-		// 	// oViewModel.setProperty("/shareSendEmailSubject",
-		// 	// 	oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
-		// 	// oViewModel.setProperty("/shareSendEmailMessage",
-		// 	// 	oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
-		// },
-
 		_onMetadataLoaded: function () {
-			/*// Store original busy indicator delay for the detail view
-			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
-				oViewModel = this.getModel("detailView"),
-				oLineItemTable = this.byId("lineItemsList"),
-				iOriginalLineItemTableBusyDelay = oLineItemTable.getBusyIndicatorDelay();
-
-			// Make sure busy indicator is displayed immediately when
-			// detail view is displayed for the first time
-			oViewModel.setProperty("/delay", 0);
-			oViewModel.setProperty("/lineItemTableDelay", 0);
-
-			oLineItemTable.attachEventOnce("updateFinished", function() {
-				// Restore original busy indicator delay for line item table
-				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
-			});
-
-			// Binding the view will set it to not busy - so the view is always busy if it is not bound
-			oViewModel.setProperty("/busy", true);
-			// Restore original busy indicator delay for the detail view
-			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);*/
 			// Store original busy indicator delay for the detail view
 			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView");
@@ -282,38 +237,105 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		onFooterSavePress: async function () {
+		// onFooterSavePress: async function () {
 
-			const oTender = this.soaState.createOpportunity();
-			var that = this;
+		// 	const oTender = this.soaState.createOpportunity();
+		// 	var that = this;
 
-			if (this._validateNewTender(oTender)) {
-				try {
-					BusyIndicator.show(0);
-					await this.soaState.createTender(oTender);
-					BusyIndicator.hide()
-					this._oParticipationDialog.close();
-					//successfully created tender
-					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
-						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
-							if (sAction === "CLOSE") {
-								let opp = that.soaState.getSelectedOpportunity();
-								opp.mainStatus = "Participated";
-								that.soaState.setSelectedOpportunity(opp);
-								sap.m.MessageToast.show("Tender creation done...");
-							} else {
-								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-								window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-							}
-						}
-					});
+		// 	if (this._validateNewTender(oTender)) {
+		// 		try {
+		// 			BusyIndicator.show(0);
+		// 			await this.soaState.createTender(oTender);
+		// 			BusyIndicator.hide()
+		// 			this._oParticipationDialog.close();
+		// 			//successfully created tender
+		// 			MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+		// 				actions: ["Go to new Tender", MessageBox.Action.CLOSE],
+		// 				styleClass: "sapUiSizeCompact",
+		// 				onClose: function (sAction) {
+		// 					if (sAction === "CLOSE") {
+		// 						let opp = that.soaState.getSelectedOpportunity();
+		// 						opp.mainStatus = "Participated";
+		// 						that.soaState.setSelectedOpportunity(opp);
+		// 						sap.m.MessageToast.show("Tender creation done...");
+		// 					} else {
+		// 						// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		// 						window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		// 					}
+		// 				}
+		// 			});
 
-				} catch (error) {
-					BusyIndicator.hide()
+		// 		} catch (error) {
+		// 			BusyIndicator.hide()
+		// 		}
+		// 	}
+		// },
+
+		_validateNewOpportunity: function (oOpportunity) {
+
+			//TODO: move to state
+
+			var bValid = true;
+			var bWarning = false;
+			var aMessages = [];
+
+			//check mandatory fields
+			if (
+				oOpportunity.tenderReference === "" ||
+				oOpportunity.classification === "" ||
+				//oTender.instituteID === "" || //IntituteType is property of institute
+				oOpportunity.tenderChannel === "" ||
+				!oOpportunity.publicationDate ||
+				!oOpportunity.offerDueDate ||
+				!oOpportunity.nextPublicationDate
+				) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Mandatory fields.',
+					description: '- Tender Reference \n' +
+						'- Classification \n' +
+						'- Institute \n' +
+						'- Channel \n' +
+						'- Publication Date \n' +
+						'- Offer due Date \n',
+					subtitle: 'Please enter all the mandatory fields..',
+					counter: 1
 				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+
 			}
+
+			//check if dates are correct
+			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.offerDueDate)) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Publication Date',
+					description: 'Publication date should be before the offer due date. \n',
+					subtitle: 'Publication date should be before the offer due date.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+			}
+
+			//if errors (or warnings) occured, show the messages in 1 dialog
+			if (!bValid || bWarning) {
+
+				//if this check is performed for the original tender that we clone from
+				var sTitle = 'Error';
+
+				//Show error messages
+				this.soaState.showMessageCompositeView(sTitle, aMessages, 'Error');
+			}
+
+			return bValid;
 		},
 
 		_validateNewTender: function (oTender) {
@@ -465,12 +487,16 @@ sap.ui.define([
 			this.getView().setBusy(true);
 			this.getView().setBusyIndicatorDelay(0);
 
-			this.soaState.saveSelectedOpportunity().then(() => {
+			if(this._validateNewOpportunity(this.soaState.getSelectedOpportunity())){
+				this.soaState.saveSelectedOpportunity().then(() => {
+					this.getView().setBusy(false);
+					this.getView().getModel().refresh();
+					this.soaState.setEditMode(false);
+					this.oObjectPageLayout.setShowFooter(false);
+				});
+			} else {
 				this.getView().setBusy(false);
-				this.getView().getModel().refresh();
-				this.soaState.setEditMode(false);
-				this.oObjectPageLayout.setShowFooter(false);
-			});
+			}
 		},
 
 		/* handle search helps */

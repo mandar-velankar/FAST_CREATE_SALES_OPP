@@ -330,9 +330,11 @@ sap.ui.define([
 		onAdd: function (){
 			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
+			let sId = this.soaState.getNewUUID();
+			let oOpportunity = this.soaState.createNewOpportunityObject(sId);
 
 			this.getRouter().navTo("object", {
-				objectId: this.soaState.getNewUUID(),
+				objectId: sId,
 				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
 
@@ -490,7 +492,9 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate) {
+				!oTender.bidDueDate ||
+				!oTender.nextPublicationDye || 
+				!oTender.awardDate) {
 
 				//add error message
 				var oMessage = {
