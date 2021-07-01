@@ -140,7 +140,7 @@
 								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/offerDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>expctawdte}" design="Bold" required="false"/>
-								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/nextAwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/expectedAwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>nwpubdate}" design="Bold" required="false"/>
 								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/nextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>

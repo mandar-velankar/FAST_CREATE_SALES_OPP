@@ -63,7 +63,7 @@ sap.ui.define([
                 "publicationDate",
                 "offerDueDate",
                 "nextPublicationDate",
-                "nextAwardDate",
+                "expectedAwardDate",
                 "contractLength",
                 "extensionPeriod"
             ]);
