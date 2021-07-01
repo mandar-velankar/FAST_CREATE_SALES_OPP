@@ -139,16 +139,16 @@
 								<m:Label text="{i18n>offrdudte}" design="Bold" required="true"/>
 								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/offerDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
-								<m:Label text="{i18n>expctawdte}" design="Bold" required="true"/>
+								<m:Label text="{i18n>expctawdte}" design="Bold" required="false"/>
 								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/nextAwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
-								<m:Label text="{i18n>nwpubdate}" design="Bold" required="true"/>
+								<m:Label text="{i18n>nwpubdate}" design="Bold" required="false"/>
 								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/nextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
-								<m:Label text="{i18n>contractLength}" design="Bold" required="true"/>
+								<m:Label text="{i18n>contractLength}" design="Bold" required="false"/>
 								<m:Input  value="{soa>/selectedOpportunity/contractLength}"  enabled="{= ${soa>/editMode} }" />
 
-								<m:Label text="{i18n>contractExtension}" design="Bold" required="true"/>
+								<m:Label text="{i18n>contractExtension}" design="Bold" required="false"/>
 								<m:Input  value="{soa>/selectedOpportunity/extensionPeriod}"  enabled="{= ${soa>/editMode} }" />
 
 							</form:content>

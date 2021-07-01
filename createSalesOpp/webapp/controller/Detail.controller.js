@@ -255,7 +255,7 @@ sap.ui.define([
 			if (this._validateNewTender(oTender)) {
 				try {
 					BusyIndicator.show(0);
-					await this.soaState.createTender(oTender);
+					//await this.soaState.createTender(oTender);
 					BusyIndicator.hide()
 					this._oParticipationDialog.close();
 					this.getModel().refresh();
