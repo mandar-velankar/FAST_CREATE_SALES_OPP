@@ -505,6 +505,7 @@ sap.ui.define([
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
+					sap.m.MessageToast.show("Opportunity creation done...");
 				});
 			} else {
 				this.getView().setBusy(false);
