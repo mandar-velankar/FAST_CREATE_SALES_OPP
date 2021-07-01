@@ -115,13 +115,13 @@
 								</m:Select>
 
 								<m:Label text="{i18n>insttyp}" design="Bold" required="true"/>
-								<m:Select id="idInstituteType" selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="{= ${soa>/editMode} }" items="{path: 'soa>/CountryChannels' }">
+								<m:Select id="idInstituteType" selectedKey="{soa>/selectedOpportunity/instituteType}" change="resetInstituteName" enabled="{= ${soa>/editMode} }" items="{path: 'soa>/CountryChannels' }">
 										<core:Item text="{soa>ChannelName}" key="{soa>ChannelName}"/>
 								</m:Select>
 
 								<m:Label text="{i18n>institnme}" design="Bold" required="true"/>
 								<!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
-								<m:Input showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/newTender/instituteName}" enabled="{= ${soa>/editMode} }"/>
+								<m:Input showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/instituteName}" enabled="{= ${soa>/editMode} }"/>
 
 
 								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
