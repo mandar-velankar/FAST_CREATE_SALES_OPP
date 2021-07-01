@@ -1,9 +1,10 @@
 sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
 	"../model/Opportunity",
+	"../model/Tender",
 	"../libs/momentjs/moment.min",
 	"sap/ui/model/json/JSONModel",
-], function (BaseState, Opportunity, MomentJS, JSONModel) {
+], function (BaseState, Opportunity, Tender, MomentJS, JSONModel) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.createsalesopportunity.state.SoaState", {
@@ -57,8 +58,47 @@ sap.ui.define([
 			return "You must provide an object literal as a parameter to create an opportunity.";
 		},
 
+		createTender: async function (tender) {
+			await this.getService().createTender(this.getNewTender());
+			await this.getService().createCountrySpecificInformation(this.getNewTender(),this.getSelectedOpportunity());
+		},
+
+		getNewTenderNo: function(sCountry){
+			return this.getService().getNewTenderNo(sCountry).then(newTenderId => {
+				this.setNextTenderNo(newTenderId.data.NEXT_TENDER_NO);
+				return newTenderId.data.NEXT_TENDER_NO;
+			});
+		},
+
+		getNewTenderID: async function(sCountry){
+			let sTenderNo = await this.getNewTenderNo(sCountry);
+
+			//get year & country
+			var sYear = moment().format('YY');
+
+			//new tender ID is build by country
+			return sCountry + "-" + sYear + "-" + sTenderNo;
+		},
+
+		getNextTenderNo: function(){
+			return this.nextTenderNo;
+		},
+
+		getNewTender: function(){
+			return this.getProperty("newTender") || {};
+		},
+
+		setNextTenderNo: function(sTenderNo){
+			this.nextTenderNo = Number(sTenderNo);
+		},
+
 		setSelectedOpportunity: function(opportunity){
 			this.setProperty("selectedOpportunity", opportunity);
+		},
+
+		setTemporaryTender: async function(sCountry){
+			const tender = await this.createNewTenderObject(sCountry);
+			this.setProperty("newTender", tender);
 		},
 
 		getSelectedOpportunity: function(){
@@ -140,6 +180,7 @@ sap.ui.define([
 				"InstituteType": "Direct",
 				"PublicationDate": "",
 				"BidDueDate": "",
+				"NextAwardDate":"",
 				"NextPublicationDye": "",
 				"ContractLength": 0,
 				"ExtensionPeriod": 0,
@@ -149,6 +190,41 @@ sap.ui.define([
 			this.setSelectedOpportunity(oOpportunity);
             return oOpportunity;
 		},
+
+		createNewTenderObject: async function(sCountry){ 
+			const sTenderId = await this.getNewTenderID(sCountry);
+			const oSelectedOpportunity = this.getModel('soa').getProperty('/selectedOpportunity');
+
+            const data = {
+                //"ID" : this.create_UUID(),
+				"TenderID": sTenderId,
+				"TenderNo": this.getNextTenderNo(),
+				"CountryCode": sCountry,
+				"Active": 1,
+				"Classification": "Contract",
+				"TenderName": "",
+				"InstituteID": "",
+				"InstituteName": "",
+				"TenderChannel": "Direct",
+				"PublicationDate": oSelectedOpportunity.publicationDate,
+				"BidDueDate": oSelectedOpportunity.offerDueDate,
+				"AwardDate": oSelectedOpportunity.nextAwardDate,
+				"NextPublicationDye": oSelectedOpportunity.nextPublicationDate,
+				"TenderStatus": "Open",
+				"GroupPurchasing": Number(0),
+				"SALES_TYPE_ID": Number(0),
+				"TENDER_TYPE_ID": Number(6),
+				"PROCUREMENT_METHOD_ID": "Not Specified",
+				"PROCUREMENT_REASON": "",
+				"HighValue": false,
+				"ContractLength": oSelectedOpportunity.contractDurationTime ? Number(oSelectedOpportunity.contractDurationTime) : Number(0),
+				"ContractExtenseion": oSelectedOpportunity.TermExtension ? Number(oSelectedOpportunity.TermExtension) : Number(0),
+				"CONTRACT_TYPE_ID": Number(0)
+            };
+
+            const oTender = new Tender(data);
+            return oTender;
+		}, 	
 
 		loadCountryChannels: async function(sCountry){
 			const aCountryChannels = await this.getService().loadCountryChannels(sCountry);

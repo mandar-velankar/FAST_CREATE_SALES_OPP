@@ -34,6 +34,10 @@ sap.ui.define([
             return this.institute;
         },
 
+        getTenderReference:function(){
+            return this.TenderReference;
+        },
+
         setProducts: function (products) {
             if (products) {
                 this.products = products.map(prd => new Product(prd));
@@ -59,9 +63,27 @@ sap.ui.define([
                 "publicationDate",
                 "offerDueDate",
                 "nextPublicationDate",
+                "nextAwardDate",
                 "contractLength",
                 "extensionPeriod"
             ]);
+        },
+
+        getJSONCountrySpecificTenderInfo: function () {
+            /*var institute = this.getInstitute();
+            if(institute){
+                let organismCode = institute.getOrganismCode();
+            }*/
+            return {
+                //Institute: organismCode,
+                TenderReference: this.getTenderReference(),
+                CountryCode:"CL",
+                ...this.getJSONObject(["publicationDate", "closingDate"])
+            };
+        },
+
+        getInstitute: function () {
+            return this.institute;
         },
 
         getAll: function () {

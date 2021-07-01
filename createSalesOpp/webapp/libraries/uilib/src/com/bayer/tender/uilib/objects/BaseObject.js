@@ -49,7 +49,7 @@ sap.ui.define([
 						return field === prop;
 					})) {
 					var newPropName = formatter(prop) || prop;
-					to[newPropName] = toString && !(from[prop] instanceof Date) && (typeof from[prop] !== "boolean") ? from[prop].toString() : from[prop] instanceof Date?new Date(from[prop]):from[prop];//eslint-disable-line
+					to[newPropName] = toString && from[prop] && !(from[prop] instanceof Date) && (typeof from[prop] !== "boolean") ? from[prop].toString() : from[prop] instanceof Date?new Date(from[prop]):from[prop];//eslint-disable-line
 				}
 			}
 			return to;

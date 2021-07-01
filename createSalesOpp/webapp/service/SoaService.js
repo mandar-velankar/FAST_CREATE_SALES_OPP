@@ -55,6 +55,15 @@ sap.ui.define([
 
 		},
 
+		/* get a new Tender ID */
+		getNewTenderNo: function (sCountry) {
+			const sKey = this.model.createKey("/CountryTenderNo", {
+				COUNTRY_CODE: sCountry
+			});
+
+			return this.odata(sKey).get();
+		},
+
 		loadCountryChannels: function (sCountry) {
 			const sCountryChannelsPath = "/CountryChannels";
 			var aFilters = [];
@@ -123,6 +132,21 @@ sap.ui.define([
 			return this.odata(sInstitutesPath).get(mParameters);
 		},
 
+		/* create & update */
+		createTender: function (oTender) {
+
+			const data = oTender.getJSON();
+			return this.odata("/PT_TMTEND").post(data);
+
+		},
+
+		createCountrySpecificInformation: function (tender, opportunity) {
+			const data = {
+				...tender.getJSONTenderID(),
+				...opportunity.getJSONCountrySpecificTenderInfo()
+			};
+			return this.odata("/CountrySpecificInformation").post(data);
+		}
 
 	});
 

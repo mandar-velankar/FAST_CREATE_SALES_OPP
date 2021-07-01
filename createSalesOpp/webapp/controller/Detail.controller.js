@@ -224,10 +224,20 @@ sap.ui.define([
 			//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 
+				let oView = this.getView();
+				let that = this;
+
 				//get dialog
+				/*this._oParticipationDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo",
+					controller: this
+				}).then(function (oParticipationDialog) {
+					oView.addDependent(that._oParticipationDialog);
+					return oParticipationDialog;
+				});*/
 				this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo", this);
 				this.getView().addDependent(this._oParticipationDialog);
-
 			}
 
 			return this._oParticipationDialog;
@@ -237,39 +247,41 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		// onFooterSavePress: async function () {
+		onSaveParticipation: async function () {
 
-		// 	const oTender = this.soaState.createOpportunity();
-		// 	var that = this;
+			const oTender = this.soaState.getNewTender();
+			var that = this;
 
-		// 	if (this._validateNewTender(oTender)) {
-		// 		try {
-		// 			BusyIndicator.show(0);
-		// 			await this.soaState.createTender(oTender);
-		// 			BusyIndicator.hide()
-		// 			this._oParticipationDialog.close();
-		// 			//successfully created tender
-		// 			MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-		// 				actions: ["Go to new Tender", MessageBox.Action.CLOSE],
-		// 				styleClass: "sapUiSizeCompact",
-		// 				onClose: function (sAction) {
-		// 					if (sAction === "CLOSE") {
-		// 						let opp = that.soaState.getSelectedOpportunity();
-		// 						opp.mainStatus = "Participated";
-		// 						that.soaState.setSelectedOpportunity(opp);
-		// 						sap.m.MessageToast.show("Tender creation done...");
-		// 					} else {
-		// 						// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-		// 						window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-		// 					}
-		// 				}
-		// 			});
+			if (this._validateNewTender(oTender)) {
+				try {
+					BusyIndicator.show(0);
+					await this.soaState.createTender(oTender);
+					BusyIndicator.hide()
+					this._oParticipationDialog.close();
+					this.getModel().refresh();
 
-		// 		} catch (error) {
-		// 			BusyIndicator.hide()
-		// 		}
-		// 	}
-		// },
+					let opp = that.soaState.getSelectedOpportunity();
+					opp.mainStatus = "Participated";
+					that.soaState.setSelectedOpportunity(opp);
+					sap.m.MessageToast.show("Tender creation done...");
+					//successfully created tender
+					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction !== MessageBox.Action.CLOSE) {
+								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app/#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+							}
+						}
+					});
+
+				} catch (error) {
+					console.error(error);
+					BusyIndicator.hide()
+				}
+			}
+		},
 
 		_validateNewOpportunity: function (oOpportunity) {
 
