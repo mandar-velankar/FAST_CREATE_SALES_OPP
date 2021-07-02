@@ -322,7 +322,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.offerDueDate)) {
+			if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
 
 				//add error message
 				var oMessage = {
@@ -335,6 +335,62 @@ sap.ui.define([
 				aMessages.push(oMessage);
 
 				bValid = false;
+			}
+
+			//check if dates are correct
+			if (oTender.AwardDate) { //optional date
+
+				if (!moment(oTender.offerDueDate).isBefore(oTender.expectedAwardDate)) {
+
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'OfferDuedate',
+						description: 'Offer due date should be before the Award date. \n',
+						subtitle: 'OfferDuedate date should be before the Award date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+			}
+
+			//check if dates are correct
+			if (oTender.nextAwardDate && oTender.nextPublicationDate) { //optional dates
+
+				if (!moment(oTender.expectedAwardDate).isBefore(oTender.nextPublicationDate)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Award date',
+						description: 'Award date should be before the next publication date. \n',
+						subtitle: 'Award date should be before the next publication date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+
+			}
+
+			//check if dates are correct
+			if (oTender.offerDueDate && oTender.InternalBidDueDate) { //optional dates
+
+				if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Internal due date',
+						description: 'Internal due date should be before the offer due date. \n',
+						subtitle: 'Internal due date should be before the offer due date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
 			}
 
 			//if errors (or warnings) occured, show the messages in 1 dialog
