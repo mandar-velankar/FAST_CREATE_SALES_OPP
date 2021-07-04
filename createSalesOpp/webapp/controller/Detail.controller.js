@@ -322,7 +322,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
+			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.offerDueDate)) {
 
 				//add error message
 				var oMessage = {
@@ -338,9 +338,9 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.AwardDate) { //optional date
+			if (oOpportunity.expectedAwardDate) { //optional date
 
-				if (!moment(oTender.offerDueDate).isBefore(oTender.expectedAwardDate)) {
+				if (!moment(oOpportunity.offerDueDate).isBefore(oOpportunity.expectedAwardDate)) {
 
 					//add error message
 					var oMessage = {
@@ -357,9 +357,9 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.nextAwardDate && oTender.nextPublicationDate) { //optional dates
+			if (oOpportunity.expectedAwardDate && oOpportunity.nextPublicationDate) { //optional dates
 
-				if (!moment(oTender.expectedAwardDate).isBefore(oTender.nextPublicationDate)) {
+				if (!moment(oOpportunity.expectedAwardDate).isBefore(oOpportunity.nextPublicationDate)) {
 					//add error message
 					var oMessage = {
 						type: 'Error',
@@ -373,24 +373,6 @@ sap.ui.define([
 					bValid = false;
 				}
 
-			}
-
-			//check if dates are correct
-			if (oTender.offerDueDate && oTender.InternalBidDueDate) { //optional dates
-
-				if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Internal due date',
-						description: 'Internal due date should be before the offer due date. \n',
-						subtitle: 'Internal due date should be before the offer due date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
 			}
 
 			//if errors (or warnings) occured, show the messages in 1 dialog
