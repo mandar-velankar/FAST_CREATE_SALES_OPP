@@ -32,7 +32,7 @@ sap.ui.define([
 		},
 
 		setEditMode: function (sEditMode){
-			//sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
+			sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
 			this.setProperty("editMode", sEditMode);
 		},
 
