@@ -35,7 +35,7 @@ sap.ui.define([
         },
 
         getTenderReference:function(){
-            return this.TenderReference;
+            return this.iD;
         },
 
         setProducts: function (products) {
@@ -65,7 +65,8 @@ sap.ui.define([
                 "nextPublicationDate",
                 "expectedAwardDate",
                 "contractLength",
-                "extensionPeriod"
+                "extensionPeriod",
+                "tenderMatchingStatus"
             ]);
         },
 

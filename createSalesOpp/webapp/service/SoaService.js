@@ -40,7 +40,7 @@ sap.ui.define([
 				}
 			};
 
-			return this.odata("/SalesOpportunities").get(mParameters);
+			return this.odata("/PublicSalesOpportunities").get(mParameters);
 		},
 
 		saveOpportunity: function (opportunity) {
@@ -143,7 +143,8 @@ sap.ui.define([
 		createCountrySpecificInformation: function (tender, opportunity) {
 			const data = {
 				...tender.getJSONTenderID(),
-				...opportunity.getJSONCountrySpecificTenderInfo()
+				...opportunity.getJSONCountrySpecificTenderInfo(),
+
 			};
 			return this.odata("/CountrySpecificInformation").post(data);
 		}

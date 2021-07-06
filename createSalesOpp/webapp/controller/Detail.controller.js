@@ -111,7 +111,7 @@ sap.ui.define([
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
 			this.getModel().metadataLoaded().then(function () {
-				var sObjectPath = this.getModel().createKey("SalesOpportunities", {
+				var sObjectPath = this.getModel().createKey("PublicSalesOpportunities", {
 					ID: this.sObjectId
 				});
 				this._bindView("/" + sObjectPath);
