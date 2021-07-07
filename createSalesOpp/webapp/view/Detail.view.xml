@@ -121,7 +121,7 @@
 
 								<m:Label text="{i18n>institnme}" design="Bold" required="true"/>
 								<!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
-								<m:Input showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/instituteName}" enabled="{= ${soa>/editMode} }"/>
+								<m:Input showValueHelp="true" id="idInstituteNameOpp" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/institute/instituteName}" enabled="{= ${soa>/editMode} }"/>
 
 
 								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>

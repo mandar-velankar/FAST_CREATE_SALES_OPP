@@ -48,7 +48,7 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/SalesOpportunities',
+							path: '/PublicSalesOpportunities',
 							sorter: {
 								path: 'TenderReference',
 								descending: false

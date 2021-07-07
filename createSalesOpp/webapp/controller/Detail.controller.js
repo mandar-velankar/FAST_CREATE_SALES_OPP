@@ -111,7 +111,7 @@ sap.ui.define([
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
 			this.getModel().metadataLoaded().then(function () {
-				var sObjectPath = this.getModel().createKey("SalesOpportunities", {
+				var sObjectPath = this.getModel().createKey("PublicSalesOpportunities", {
 					ID: this.sObjectId
 				});
 				this._bindView("/" + sObjectPath);
@@ -322,7 +322,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
+			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.offerDueDate)) {
 
 				//add error message
 				var oMessage = {
@@ -338,9 +338,9 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.AwardDate) { //optional date
+			if (oOpportunity.expectedAwardDate) { //optional date
 
-				if (!moment(oTender.offerDueDate).isBefore(oTender.expectedAwardDate)) {
+				if (!moment(oOpportunity.offerDueDate).isBefore(oOpportunity.expectedAwardDate)) {
 
 					//add error message
 					var oMessage = {
@@ -357,9 +357,9 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.nextAwardDate && oTender.nextPublicationDate) { //optional dates
+			if (oOpportunity.expectedAwardDate && oOpportunity.nextPublicationDate) { //optional dates
 
-				if (!moment(oTender.expectedAwardDate).isBefore(oTender.nextPublicationDate)) {
+				if (!moment(oOpportunity.expectedAwardDate).isBefore(oOpportunity.nextPublicationDate)) {
 					//add error message
 					var oMessage = {
 						type: 'Error',
@@ -373,24 +373,6 @@ sap.ui.define([
 					bValid = false;
 				}
 
-			}
-
-			//check if dates are correct
-			if (oTender.offerDueDate && oTender.InternalBidDueDate) { //optional dates
-
-				if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Internal due date',
-						description: 'Internal due date should be before the offer due date. \n',
-						subtitle: 'Internal due date should be before the offer due date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
 			}
 
 			//if errors (or warnings) occured, show the messages in 1 dialog
@@ -561,7 +543,7 @@ sap.ui.define([
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
-					sap.m.MessageToast.show("Opportunity creation done...");
+					sap.m.MessageToast.show("Opportunity saved successfully...");
 				});
 			} else {
 				this.getView().setBusy(false);
@@ -573,7 +555,12 @@ sap.ui.define([
 			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
 
 			var oView = this.getView();
-			this._sInputId = this.byId('idInstituteName').getId();
+			let oInstituteInputField = this.byId('idInstituteName');
+			if(!oInstituteInputField){
+				oInstituteInputField = this.byId('idInstituteNameOpp');
+			}
+
+			this._sInputId = oInstituteInputField.getId();
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -608,7 +595,14 @@ sap.ui.define([
 				var oInputfield = this.byId(this._sInputId);
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				if (this._sInputId.includes("InstituteName")) {
+				if (this._sInputId.includes("InstituteNameOpp")) {
+					const oOpportunity = this.soaState.getSelectedOpportunity();
+					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
+					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute_CountryCode = 'CL';
+				}
+				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
 				}
