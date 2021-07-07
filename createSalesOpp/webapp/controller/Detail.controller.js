@@ -543,7 +543,7 @@ sap.ui.define([
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
-					sap.m.MessageToast.show("Opportunity creation done...");
+					sap.m.MessageToast.show("Opportunity saved successfully...");
 				});
 			} else {
 				this.getView().setBusy(false);
@@ -555,7 +555,12 @@ sap.ui.define([
 			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
 
 			var oView = this.getView();
-			this._sInputId = this.byId('idInstituteName').getId();
+			let oInstituteInputField = this.byId('idInstituteName');
+			if(!oInstituteInputField){
+				oInstituteInputField = this.byId('idInstituteNameOpp');
+			}
+
+			this._sInputId = oInstituteInputField.getId();
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -590,7 +595,14 @@ sap.ui.define([
 				var oInputfield = this.byId(this._sInputId);
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				if (this._sInputId.includes("InstituteName")) {
+				if (this._sInputId.includes("InstituteNameOpp")) {
+					const oOpportunity = this.soaState.getSelectedOpportunity();
+					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
+					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute_CountryCode = 'CL';
+				}
+				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
 				}

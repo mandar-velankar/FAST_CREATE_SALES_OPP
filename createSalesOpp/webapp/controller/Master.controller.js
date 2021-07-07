@@ -389,11 +389,9 @@ sap.ui.define([
 		 */
 		createStateObject: function (selectedObj) {
 
-			// const selectedObj = this.getView().getModel().getObject(sObjectPath);
-
 			// expand Comprador and Items
-			selectedObj["Comprador"] = this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
-			selectedObj["Items"]["results"] = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+			selectedObj["Institute"] = selectedObj.Institute && this.getView().getModel().getObject(`/${selectedObj.Institute.__ref}`);
+			selectedObj["Products"]["results"] = selectedObj.Products && selectedObj.Products.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
 			return this.soaState.createOpportunity(selectedObj);
 

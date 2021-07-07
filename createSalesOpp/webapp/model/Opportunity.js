@@ -66,7 +66,9 @@ sap.ui.define([
                 "expectedAwardDate",
                 "contractLength",
                 "extensionPeriod",
-                "tenderMatchingStatus"
+                "tenderMatchingStatus",
+                "institute_InstituteID",
+                "institute_CountryCode"
             ]);
         },
 
@@ -83,14 +85,10 @@ sap.ui.define([
             };
         },
 
-        getInstitute: function () {
-            return this.institute;
-        },
-
         getAll: function () {
             return {
                 ...this.getJSON(),
-                Institute: this.getInstitute() && this.getInstitute().getJSON(),
+                //Institute: this.getInstitute() && this.getInstitute().getJSON(),
                 Products: this.getProducts().map(item => item.getJSON())
             };
         }

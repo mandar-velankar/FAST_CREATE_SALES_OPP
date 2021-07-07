@@ -2,9 +2,10 @@ sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
 	"../model/Opportunity",
 	"../model/Tender",
+	"../model/Institute",
 	"../libs/momentjs/moment.min",
 	"sap/ui/model/json/JSONModel",
-], function (BaseState, Opportunity, Tender, MomentJS, JSONModel) {
+], function (BaseState, Opportunity, Tender, Institute, MomentJS, JSONModel) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.createsalesopportunity.state.SoaState", {
@@ -32,8 +33,12 @@ sap.ui.define([
 		},
 
 		setEditMode: function (sEditMode){
-			sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
-			this.setProperty("editMode", sEditMode);
+			try {
+				sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
+				this.setProperty("editMode", sEditMode);
+			} catch {
+				this.setProperty("editMode", sEditMode);
+			}
 		},
 
 		getEditMode: function (){
@@ -181,9 +186,14 @@ sap.ui.define([
 				"PublicationDate": "",
 				"BidDueDate": "",
 				"ExpectedAwardDate":"",
-				"NextPublicationDye": "",
+				"NextPublicationDate": "",
 				"ContractLength": 0,
 				"ExtensionPeriod": 0,
+				"Institute": {
+					"InstituteName": ""
+				},
+				"Institute_InstituteID": 0,
+				"Institute_CountryCode": ""
             };
 
             const oOpportunity = this.createOpportunity(data);
