@@ -160,15 +160,18 @@
 			<ObjectPageSection id="opportunityProductsId" title="Products"  visible="true">
 					<ObjectPageSubSection mode="Expanded">
 						<m:VBox fitContainer="true">
+							<m:Toolbar>
+								<m:ToolbarSpacer/>
+								<m:Button id="idAddLtr" visible="{= ${soa>/editMode} === true ? true : false}" text="{i18n>AddProduct}" icon="sap-icon://add" press="onAddProduct"/>
+							</m:Toolbar>
 							<m:Table id="ProductsTableID" 
-										mode="SingleSelectMaster"
+										mode="{= ${soa>/editMode} === true ? 'Delete' : 'SingleSelectMaster'}"
 										delete="onDeleteProduct"
 										selectionChange=".onProductItemSelect"
 										items="{
 											path: 'soa>/selectedOpportunity/products',
 											sorter: { path: 'matchedProductName', descending: true} 
-									}"
-							>
+									}">
 								<m:columns>
 									<m:Column >
 										<m:Label text="Brand ID" wrapping="true"/>  
@@ -203,11 +206,11 @@
 								</m:columns>
 								<m:items>
 									<m:ColumnListItem id="productTableListID" 
-										type="Navigation"
+										type="{= ${soa>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
 										press="onProductItemSelect"
 										detailPress="onProductItemSelect">
 										<m:cells>
-											<m:Text text="{soa>brandID}"/>
+											<m:Input value="{soa>brandID}" enabled="{= ${soa>/editMode} }"/>
 											<!--<m:Text text="{soa>productCode}"/>
 											<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>

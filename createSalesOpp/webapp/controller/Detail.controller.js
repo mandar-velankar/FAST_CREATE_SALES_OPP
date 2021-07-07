@@ -630,9 +630,9 @@ sap.ui.define([
 			const selectedSection = oEvent.getParameter("section").getTitle();
 
 			// Products Tab
-			if(selectedSection && selectedSection.indexOf("Products") > -1){
+			/*if(selectedSection && selectedSection.indexOf("Products") > -1){
 				this.byId("editButtonId").setVisible(false);
-			}
+			}*/
 			
 			// Opportunity Info Tab
 			if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
@@ -648,6 +648,31 @@ sap.ui.define([
 				}.bind(this));
 			}
 		},
+
+		onAddProduct: function(oEvent){
+			this.soaState.addProduct();
+		},
+
+		onDeleteProduct: function (oEvent) {
+            var that = this;
+            var aSelectedProduct = oEvent.getParameter("listItem");
+			var sPathSelectedProduct = aSelectedProduct.getBindingContextPath();
+
+            MessageBox.warning("Are you sure you want to delete this product?", {
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                styleClass: "sapUiSizeCompact",
+                onClose: function (sAction) {
+                    if (sAction === "YES") {
+                        that.soaState.deleteProduct(parseInt(sPathSelectedProduct.substring(sPathSelectedProduct.lastIndexOf('/') + 1)));
+
+                    } else {
+                        //do nothing and stay on page
+                    }
+                }
+            });
+
+
+        },
 
 	});
 
