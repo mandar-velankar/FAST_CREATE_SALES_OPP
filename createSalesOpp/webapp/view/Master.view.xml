@@ -29,14 +29,14 @@
 					</Select>
 
 					<!-- Filter for Substatus -->
-					<!-- <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
+					 <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
 							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
-					</Select> -->
+					</Select>
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
