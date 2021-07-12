@@ -5,10 +5,13 @@ sap.ui.define([
 
     var product = BaseObject.extend("com.bayer.tender.createsalesopportunity.model.Product", {
 
-        constructor: function (data) {
+        constructor: function (data, editable) {
 
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
+            this.isDirty = false;
+            this.Editable = editable || false;
+            this.Deletable = true;
 
         },
         
