@@ -297,11 +297,10 @@ sap.ui.define([
 			if (
 				oOpportunity.tenderReference === "" ||
 				oOpportunity.classification === "" ||
-				//oTender.instituteID === "" || //IntituteType is property of institute
+				oOpportunity.institute_InstituteID === 0 ||
 				oOpportunity.tenderChannel === "" ||
 				!oOpportunity.publicationDate ||
-				!oOpportunity.offerDueDate ||
-				!oOpportunity.nextPublicationDate
+				!oOpportunity.offerDueDate
 				) {
 
 				//add error message
