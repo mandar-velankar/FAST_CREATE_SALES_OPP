@@ -34,8 +34,22 @@ sap.ui.define([
             return this.institute;
         },
 
+        getInstituteId: function(){
+            return this.institute_InstituteID;
+        },
+
+        getInstituteName: function(){
+            if(this.institute){
+               return this.institute.instituteName;
+            }
+        },
+
+        getClosingDate: function(){
+            return this.offerDueDate;
+        },
+
         getTenderReference:function(){
-            return this.iD;
+            return this.tenderReference;
         },
 
         setProducts: function (products) {
@@ -78,10 +92,11 @@ sap.ui.define([
                 let organismCode = institute.getOrganismCode();
             }*/
             return {
-                //Institute: organismCode,
+                Institute: this.getInstituteName(),
                 TenderReference: this.getTenderReference(),
                 CountryCode:"CL",
-                ...this.getJSONObject(["publicationDate", "closingDate"])
+                ClosingDate: this.getClosingDate(),
+                ...this.getJSONObject(["publicationDate"])
             };
         },
 

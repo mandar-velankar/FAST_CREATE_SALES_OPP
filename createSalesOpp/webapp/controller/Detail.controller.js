@@ -405,9 +405,7 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.bidDueDate) {
 
 				//add error message
 				var oMessage = {
@@ -419,7 +417,7 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Offer due Date \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -609,6 +607,7 @@ sap.ui.define([
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+			this._sInputId = "";
 		},
 
 		onProductItemSelect: function(oEvent){
