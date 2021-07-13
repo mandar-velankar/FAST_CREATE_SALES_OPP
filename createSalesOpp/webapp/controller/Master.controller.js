@@ -490,9 +490,7 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.bidDueDate) {
 
 				//add error message
 				var oMessage = {
@@ -504,7 +502,7 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Offer due Date \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -657,7 +655,7 @@ sap.ui.define([
 
 		/* handle search helps */
 		handleValueHelp: async function (oEvent) {
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstTypeTender').getSelectedKey());
 
 			var oView = this.getView();
 			this._sInputId = this.byId('idInstituteName').getId();
@@ -692,16 +690,23 @@ sap.ui.define([
 		_handleValueHelpClose: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
-				// var oInputfield = this.byId(this._sInputId); 
-				// oInputfield.setValue(oSelectedItem.getTitle());
+				var oInputfield = this.byId(this._sInputId);
+				oInputfield.setValue(oSelectedItem.getTitle());
 
-				if (this._sInputId.includes("InstituteName")) {
+				if (this._sInputId.includes("InstituteNameOpp")) {
+					const oOpportunity = this.soaState.getSelectedOpportunity();
+					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
+					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute_CountryCode = 'CL';
+				}
+				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
-					oTender.instituteName = oSelectedItem.getTitle();
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+			this._sInputId = "";
 		}
 
 		/* end of search help handlers */

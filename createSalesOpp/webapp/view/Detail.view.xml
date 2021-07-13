@@ -71,22 +71,22 @@
 				</m:VBox>
 
 				<!-- SELECTED CONTRACT -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+				<!-- <m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Name"/>
 					<m:Text  text="{soa>/selectedOpportunity/name}"/>
-				</m:VBox>
+				</m:VBox>-->
 
 				<!-- SELECTED CONTRACT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Institute"/>
-					<m:Text text="{soa>/selectedOpportunity/institute/organismNumber}"/>
+					<m:Text text="{soa>/selectedOpportunity/institute/instituteName}"/>
 				</m:VBox>				
 				
 				<!-- SELECTED PRODUCT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Closing Date"/>
 					<m:Text text="{
-										path: 'soa>/selectedOpportunity/closingDate',
+										path: 'soa>/selectedOpportunity/offerDueDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
