@@ -4,8 +4,10 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"../model/formatter",
 	"sap/ui/core/BusyIndicator",
-	"sap/m/library"
-], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary) {
+	"sap/m/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
