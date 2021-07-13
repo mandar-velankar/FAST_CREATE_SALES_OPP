@@ -449,6 +449,10 @@ sap.ui.define([
 					BusyIndicator.show(0);
 					await this.soaState.createTender(oTender);
 					BusyIndicator.hide()
+					let opp = this.soaState.getSelectedOpportunity();
+					opp.mainStatus = "Participated";
+					this.getModel().refresh();
+					
 					this.soaState.clearSelectedOpportunity();
 					this._oParticipationDialog.close();
 					//successfully created tender
