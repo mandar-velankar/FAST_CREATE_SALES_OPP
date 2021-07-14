@@ -71,22 +71,22 @@
 				</m:VBox>
 
 				<!-- SELECTED CONTRACT -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+				<!-- <m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Name"/>
 					<m:Text  text="{soa>/selectedOpportunity/name}"/>
-				</m:VBox>
+				</m:VBox>-->
 
 				<!-- SELECTED CONTRACT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Institute"/>
-					<m:Text text="{soa>/selectedOpportunity/institute/organismNumber}"/>
+					<m:Text text="{soa>/selectedOpportunity/institute/instituteName}"/>
 				</m:VBox>				
 				
 				<!-- SELECTED PRODUCT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Closing Date"/>
 					<m:Text text="{
-										path: 'soa>/selectedOpportunity/closingDate',
+										path: 'soa>/selectedOpportunity/offerDueDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
@@ -121,7 +121,7 @@
 
 								<m:Label text="{i18n>institnme}" design="Bold" required="true"/>
 								<!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
-								<m:Input showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/instituteName}" enabled="{= ${soa>/editMode} }"/>
+								<m:Input showValueHelp="true" id="idInstituteNameOpp" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/institute/instituteName}" enabled="{= ${soa>/editMode} }"/>
 
 
 								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
@@ -160,15 +160,18 @@
 			<ObjectPageSection id="opportunityProductsId" title="Products"  visible="true">
 					<ObjectPageSubSection mode="Expanded">
 						<m:VBox fitContainer="true">
+							<m:Toolbar>
+								<m:ToolbarSpacer/>
+								<m:Button id="idAddLtr" visible="{= ${soa>/editMode} === true ? true : false}" text="{i18n>AddProduct}" icon="sap-icon://add" press="onAddProduct"/>
+							</m:Toolbar>
 							<m:Table id="ProductsTableID" 
-										mode="SingleSelectMaster"
+										mode="{= ${soa>/editMode} === true ? 'Delete' : 'SingleSelectMaster'}"
 										delete="onDeleteProduct"
 										selectionChange=".onProductItemSelect"
 										items="{
 											path: 'soa>/selectedOpportunity/products',
 											sorter: { path: 'matchedProductName', descending: true} 
-									}"
-							>
+									}">
 								<m:columns>
 									<m:Column >
 										<m:Label text="Brand ID" wrapping="true"/>  
@@ -203,13 +206,12 @@
 								</m:columns>
 								<m:items>
 									<m:ColumnListItem id="productTableListID" 
-										type="Navigation"
+										type="{= ${soa>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
 										press="onProductItemSelect"
 										detailPress="onProductItemSelect">
 										<m:cells>
-											<m:Text text="{soa>brandID}"/>
-											<!--<m:Text text="{soa>productCode}"/>
-											<m:Text id="productNameId" text="{soa>productName}"/> 
+											<m:Input value="{soa>brandID}" enabled="{= ${soa>editable} }"/>
+											<!--<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>
 											<m:Text id="productQtyId" text="{soa>quantity}"/> 
 											<m:Text text="{soa>supplierAwardName}"/>

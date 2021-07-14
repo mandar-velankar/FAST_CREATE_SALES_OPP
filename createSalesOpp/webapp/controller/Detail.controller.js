@@ -4,8 +4,10 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"../model/formatter",
 	"sap/ui/core/BusyIndicator",
-	"sap/m/library"
-], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary) {
+	"sap/m/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -111,7 +113,7 @@ sap.ui.define([
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
 			this.getModel().metadataLoaded().then(function () {
-				var sObjectPath = this.getModel().createKey("SalesOpportunities", {
+				var sObjectPath = this.getModel().createKey("PublicSalesOpportunities", {
 					ID: this.sObjectId
 				});
 				this._bindView("/" + sObjectPath);
@@ -295,11 +297,10 @@ sap.ui.define([
 			if (
 				oOpportunity.tenderReference === "" ||
 				oOpportunity.classification === "" ||
-				//oTender.instituteID === "" || //IntituteType is property of institute
+				oOpportunity.institute_InstituteID === 0 ||
 				oOpportunity.tenderChannel === "" ||
 				!oOpportunity.publicationDate ||
-				!oOpportunity.offerDueDate ||
-				!oOpportunity.nextPublicationDate
+				!oOpportunity.offerDueDate
 				) {
 
 				//add error message
@@ -322,7 +323,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
+			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.offerDueDate)) {
 
 				//add error message
 				var oMessage = {
@@ -338,9 +339,9 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.AwardDate) { //optional date
+			if (oOpportunity.expectedAwardDate) { //optional date
 
-				if (!moment(oTender.offerDueDate).isBefore(oTender.expectedAwardDate)) {
+				if (!moment(oOpportunity.offerDueDate).isBefore(oOpportunity.expectedAwardDate)) {
 
 					//add error message
 					var oMessage = {
@@ -357,9 +358,9 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.nextAwardDate && oTender.nextPublicationDate) { //optional dates
+			if (oOpportunity.expectedAwardDate && oOpportunity.nextPublicationDate) { //optional dates
 
-				if (!moment(oTender.expectedAwardDate).isBefore(oTender.nextPublicationDate)) {
+				if (!moment(oOpportunity.expectedAwardDate).isBefore(oOpportunity.nextPublicationDate)) {
 					//add error message
 					var oMessage = {
 						type: 'Error',
@@ -373,24 +374,6 @@ sap.ui.define([
 					bValid = false;
 				}
 
-			}
-
-			//check if dates are correct
-			if (oTender.offerDueDate && oTender.InternalBidDueDate) { //optional dates
-
-				if (!moment(oTender.publicationDate).isBefore(oTender.offerDueDate)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Internal due date',
-						description: 'Internal due date should be before the offer due date. \n',
-						subtitle: 'Internal due date should be before the offer due date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
 			}
 
 			//if errors (or warnings) occured, show the messages in 1 dialog
@@ -422,9 +405,7 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.bidDueDate) {
 
 				//add error message
 				var oMessage = {
@@ -436,7 +417,7 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Offer due Date \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -557,11 +538,18 @@ sap.ui.define([
 
 			if(this._validateNewOpportunity(this.soaState.getSelectedOpportunity())){
 				this.soaState.saveSelectedOpportunity().then(() => {
+					this.soaState.allProductsDisplayMode();
 					this.getView().setBusy(false);
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
-					sap.m.MessageToast.show("Opportunity creation done...");
+					sap.m.MessageToast.show("Opportunity saved successfully...");
+
+					let oTable = this.byId("ProductsTableID");
+					if(oTable){
+						oTable.getItems().map(item => item._oDetailControl.setProperty("icon", "sap-icon://edit")) 
+						oTable.getModel("soa").refresh();
+					}
 				});
 			} else {
 				this.getView().setBusy(false);
@@ -573,7 +561,12 @@ sap.ui.define([
 			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
 
 			var oView = this.getView();
-			this._sInputId = this.byId('idInstituteName').getId();
+			let oInstituteInputField = this.byId('idInstituteName');
+			if(!oInstituteInputField){
+				oInstituteInputField = this.byId('idInstituteNameOpp');
+			}
+
+			this._sInputId = oInstituteInputField.getId();
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -608,37 +601,75 @@ sap.ui.define([
 				var oInputfield = this.byId(this._sInputId);
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				if (this._sInputId.includes("InstituteName")) {
+				if (this._sInputId.includes("InstituteNameOpp")) {
+					const oOpportunity = this.soaState.getSelectedOpportunity();
+					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
+					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
+					oOpportunity.institute_CountryCode = 'CL';
+				}
+				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+			this._sInputId = "";
 		},
 
 		onProductItemSelect: function(oEvent){
-			const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
-			const selectedObj = objContext?.getObject();
 
-			let oNextUIState = "";
+			let oTable = this.byId("ProductsTableID");
 
-			this.oOwnerComponent.getHelper().then(function (oHelper) {
-				oNextUIState = oHelper.getNextUIState(2);
-				this.oRouter.navTo("objectDetail", {
-					layout: oNextUIState.layout,
-					objectId: selectedObj?.opportunity_ID,
-					productId: selectedObj?.iD
-				});
-			}.bind(this));
+			try {
+				var sMode = oEvent.getSource().getProperty('mode'); //display
+			} catch (error) {
+				var sMode =  oEvent.getSource().getProperty('type'); //edit
+			}
+			
+
+			switch (sMode) {
+				case 'SingleSelectMaster': 
+					const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
+					const selectedObj = objContext?.getObject();
+		
+					let oNextUIState = "";
+		
+					this.oOwnerComponent.getHelper().then(function (oHelper) {
+						oNextUIState = oHelper.getNextUIState(2);
+						this.oRouter.navTo("objectDetail", {
+							layout: oNextUIState.layout,
+							objectId: selectedObj?.opportunity_ID,
+							productId: selectedObj?.iD
+						});
+					}.bind(this));
+					break;
+				case "DetailAndActive":
+					let sId = oEvent.getSource().getId();
+					let opp = this.soaState.getSelectedOpportunity();
+					let selectedProduct = opp.products[parseInt(sId.substring(sId.lastIndexOf('-') + 1))];
+					selectedProduct.editable = selectedProduct.editable ? false : true; //set property as enabled
+
+					/* set appropriate icon */
+					if(selectedProduct.editable === true){
+						oEvent.getSource()._oDetailControl.setProperty("icon", "sap-icon://display");
+					} else {
+						oEvent.getSource()._oDetailControl.setProperty("icon", "sap-icon://edit");
+					}
+					oTable.getModel("soa").refresh();
+
+					break;
+			}
+			
 		},
 
 		onSectionNavigate: function(oEvent){
 			const selectedSection = oEvent.getParameter("section").getTitle();
 
 			// Products Tab
-			if(selectedSection && selectedSection.indexOf("Products") > -1){
+			/*if(selectedSection && selectedSection.indexOf("Products") > -1){
 				this.byId("editButtonId").setVisible(false);
-			}
+			}*/
 			
 			// Opportunity Info Tab
 			if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
@@ -654,6 +685,31 @@ sap.ui.define([
 				}.bind(this));
 			}
 		},
+
+		onAddProduct: function(oEvent){
+			this.soaState.addProduct();
+		},
+
+		onDeleteProduct: function (oEvent) {
+            var that = this;
+            var aSelectedProduct = oEvent.getParameter("listItem");
+			var sPathSelectedProduct = aSelectedProduct.getBindingContextPath();
+
+            MessageBox.warning("Are you sure you want to delete this product?", {
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                styleClass: "sapUiSizeCompact",
+                onClose: function (sAction) {
+                    if (sAction === "YES") {
+                        that.soaState.deleteProduct(parseInt(sPathSelectedProduct.substring(sPathSelectedProduct.lastIndexOf('/') + 1)));
+
+                    } else {
+                        //do nothing and stay on page
+                    }
+                }
+            });
+
+
+        },
 
 	});
 

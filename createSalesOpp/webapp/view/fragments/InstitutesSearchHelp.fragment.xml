@@ -5,6 +5,7 @@
 		title="Institutes"
 		items="{soa>/CountryInstitutes}"
 		search="_handleValueHelpSearch"
+		liveChange="_handleValueHelpSearch"
 		confirm="_handleValueHelpClose"
 		cancel="_handleValueHelpClose">
 		<StandardListItem
