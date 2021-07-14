@@ -4,8 +4,10 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"../model/formatter",
 	"sap/ui/core/BusyIndicator",
-	"sap/m/library"
-], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary) {
+	"sap/m/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -295,11 +297,10 @@ sap.ui.define([
 			if (
 				oOpportunity.tenderReference === "" ||
 				oOpportunity.classification === "" ||
-				//oTender.instituteID === "" || //IntituteType is property of institute
+				oOpportunity.institute_InstituteID === 0 ||
 				oOpportunity.tenderChannel === "" ||
 				!oOpportunity.publicationDate ||
-				!oOpportunity.offerDueDate ||
-				!oOpportunity.nextPublicationDate
+				!oOpportunity.offerDueDate
 				) {
 
 				//add error message
@@ -404,9 +405,7 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.bidDueDate) {
 
 				//add error message
 				var oMessage = {
@@ -418,7 +417,7 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Offer due Date \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -608,6 +607,7 @@ sap.ui.define([
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+			this._sInputId = "";
 		},
 
 		onProductItemSelect: function(oEvent){
