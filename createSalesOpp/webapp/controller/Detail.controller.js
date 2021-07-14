@@ -547,6 +547,7 @@ sap.ui.define([
 
 					let oTable = this.byId("ProductsTableID");
 					if(oTable){
+						oTable.getItems().map(item => item._oDetailControl.setProperty("icon", "sap-icon://edit")) 
 						oTable.getModel("soa").refresh();
 					}
 				});
