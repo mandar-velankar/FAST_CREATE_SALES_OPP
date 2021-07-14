@@ -452,7 +452,7 @@ sap.ui.define([
 					let opp = this.soaState.getSelectedOpportunity();
 					opp.mainStatus = "Participated";
 					this.getModel().refresh();
-					
+
 					this.soaState.clearSelectedOpportunity();
 					this._oParticipationDialog.close();
 					//successfully created tender

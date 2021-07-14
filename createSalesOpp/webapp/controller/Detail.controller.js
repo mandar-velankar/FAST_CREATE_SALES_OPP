@@ -538,11 +538,18 @@ sap.ui.define([
 
 			if(this._validateNewOpportunity(this.soaState.getSelectedOpportunity())){
 				this.soaState.saveSelectedOpportunity().then(() => {
+					this.soaState.allProductsDisplayMode();
 					this.getView().setBusy(false);
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
 					sap.m.MessageToast.show("Opportunity saved successfully...");
+
+					let oTable = this.byId("ProductsTableID");
+					if(oTable){
+						oTable.getItems().map(item => item._oDetailControl.setProperty("icon", "sap-icon://edit")) 
+						oTable.getModel("soa").refresh();
+					}
 				});
 			} else {
 				this.getView().setBusy(false);
@@ -611,19 +618,49 @@ sap.ui.define([
 		},
 
 		onProductItemSelect: function(oEvent){
-			const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
-			const selectedObj = objContext?.getObject();
 
-			let oNextUIState = "";
+			let oTable = this.byId("ProductsTableID");
 
-			this.oOwnerComponent.getHelper().then(function (oHelper) {
-				oNextUIState = oHelper.getNextUIState(2);
-				this.oRouter.navTo("objectDetail", {
-					layout: oNextUIState.layout,
-					objectId: selectedObj?.opportunity_ID,
-					productId: selectedObj?.iD
-				});
-			}.bind(this));
+			try {
+				var sMode = oEvent.getSource().getProperty('mode'); //display
+			} catch (error) {
+				var sMode =  oEvent.getSource().getProperty('type'); //edit
+			}
+			
+
+			switch (sMode) {
+				case 'SingleSelectMaster': 
+					const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
+					const selectedObj = objContext?.getObject();
+		
+					let oNextUIState = "";
+		
+					this.oOwnerComponent.getHelper().then(function (oHelper) {
+						oNextUIState = oHelper.getNextUIState(2);
+						this.oRouter.navTo("objectDetail", {
+							layout: oNextUIState.layout,
+							objectId: selectedObj?.opportunity_ID,
+							productId: selectedObj?.iD
+						});
+					}.bind(this));
+					break;
+				case "DetailAndActive":
+					let sId = oEvent.getSource().getId();
+					let opp = this.soaState.getSelectedOpportunity();
+					let selectedProduct = opp.products[parseInt(sId.substring(sId.lastIndexOf('-') + 1))];
+					selectedProduct.editable = selectedProduct.editable ? false : true; //set property as enabled
+
+					/* set appropriate icon */
+					if(selectedProduct.editable === true){
+						oEvent.getSource()._oDetailControl.setProperty("icon", "sap-icon://display");
+					} else {
+						oEvent.getSource()._oDetailControl.setProperty("icon", "sap-icon://edit");
+					}
+					oTable.getModel("soa").refresh();
+
+					break;
+			}
+			
 		},
 
 		onSectionNavigate: function(oEvent){

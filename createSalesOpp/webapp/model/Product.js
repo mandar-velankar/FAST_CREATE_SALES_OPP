@@ -10,8 +10,8 @@ sap.ui.define([
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
             this.isDirty = false;
-            this.Editable = editable || false;
-            this.Deletable = true;
+            this.editable = editable || false;
+            this.deletable = true;
 
         },
         
