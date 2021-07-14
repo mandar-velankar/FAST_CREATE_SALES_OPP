@@ -107,7 +107,7 @@
 								<ObjectIdentifier title="{i18n>contractExtension}" />
 							</header>
 						</Column>
-						<Column width="5%" minScreenWidth="920px" demandPopin="false" popinDisplay="Inline" hiddenInPopin="true" visible="{= ${appView>/layout} === 'OneColumn' }">
+						<Column width="5%" minScreenWidth="920px" demandPopin="false" popinDisplay="Inline" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<header>
 								<Label text=""/>
 							</header>

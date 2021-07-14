@@ -243,7 +243,8 @@ sap.ui.define([
 				"iD": this.getNewUUID(),
                 "brandID": "",
                 "comment": "",
-                "opportunity_ID": oOpportunity.iD
+                "opportunity_ID": oOpportunity.iD,
+				"editable": true
 			}, true);
 		},
 
@@ -253,7 +254,15 @@ sap.ui.define([
 				oOpportunity.products = {}
 			}
 
-			oOpportunity.products.push(this.createEmptyProduct(oOpportunity));
+			oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
+			this.updateModel();
+		},
+
+		allProductsDisplayMode: function(){
+			let oOpportunity = this.getSelectedOpportunity();
+			if(oOpportunity.products){
+				oOpportunity.products.map(product => product.editable = false);
+			}
 			this.updateModel();
 		},
 

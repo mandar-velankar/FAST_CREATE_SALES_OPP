@@ -210,9 +210,8 @@
 										press="onProductItemSelect"
 										detailPress="onProductItemSelect">
 										<m:cells>
-											<m:Input value="{soa>brandID}" enabled="{= ${soa>/editMode} }"/>
-											<!--<m:Text text="{soa>productCode}"/>
-											<m:Text id="productNameId" text="{soa>productName}"/> 
+											<m:Input value="{soa>brandID}" enabled="{= ${soa>editable} }"/>
+											<!--<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>
 											<m:Text id="productQtyId" text="{soa>quantity}"/> 
 											<m:Text text="{soa>supplierAwardName}"/>
