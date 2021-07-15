@@ -49,7 +49,7 @@ sap.ui.define([
         },
 
         getTenderReference:function(){
-            return this.tenderReference;
+            return this.iD; //using the ID as a reference to our sales opportunity in the tender application
         },
 
         setProducts: function (products) {
