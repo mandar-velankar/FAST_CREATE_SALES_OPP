@@ -250,11 +250,13 @@ sap.ui.define([
 
 		addProduct: function(){
 			let oOpportunity = this.getSelectedOpportunity();
-			if(!oOpportunity.products){
-				oOpportunity.products = {}
+			if(Object.entries(oOpportunity.products).length === 0){
+				var oProduct = this.createEmptyProduct(oOpportunity, true)
+				oOpportunity.products = [oProduct];
+			} else {
+				oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
 			}
-
-			oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
+			
 			this.updateModel();
 		},
 
