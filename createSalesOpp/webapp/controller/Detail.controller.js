@@ -558,15 +558,12 @@ sap.ui.define([
 
 		/* handle search helps */
 		handleValueHelp: async function (oEvent) {
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
-
+			
 			var oView = this.getView();
-			let oInstituteInputField = this.byId('idInstituteName');
-			if(!oInstituteInputField){
-				oInstituteInputField = this.byId('idInstituteNameOpp');
-			}
+			let sId = oEvent.getSource().getId();
+			this._sInputId = sId.substring(sId.lastIndexOf('-') + 1);
 
-			this._sInputId = oInstituteInputField.getId();
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {

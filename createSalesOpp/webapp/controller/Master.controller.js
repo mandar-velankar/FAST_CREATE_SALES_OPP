@@ -450,7 +450,6 @@ sap.ui.define([
 					await this.soaState.createTender(oTender);
 					BusyIndicator.hide()
 					let opp = this.soaState.getSelectedOpportunity();
-					opp.mainStatus = "Participated";
 					this.getModel().refresh();
 
 					this.soaState.clearSelectedOpportunity();
