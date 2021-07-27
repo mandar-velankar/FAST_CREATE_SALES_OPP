@@ -100,6 +100,23 @@
 		<sections>
 			<!-- OPPORTUNITY INFORMATION TAB -->
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
+					<ObjectPageSubSection mode="Expanded" title="Comment">
+						<actions>
+							<m:Switch state="{= ${soa>/selectedOpportunity/tenderMatchingStatus} === 'In' ? true : false }" change="onTenderMatchingStatusChange" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
+								<m:layoutData>
+									<m:FlexItemData growFactor="1" />
+								</m:layoutData>
+							</m:Switch>
+						</actions>
+						<form:SimpleForm id="opportunityCommentFormId" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
+								emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" backgroundDesign="Solid">
+								<form:content>
+									<!-- <core:Title text="Comment"/>-->
+									<m:TextArea value="{soa>/selectedOpportunity/description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+								</form:content>
+						</form:SimpleForm>
+					</ObjectPageSubSection>	
+					
 					<ObjectPageSubSection mode="Expanded" title="">
 						<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"

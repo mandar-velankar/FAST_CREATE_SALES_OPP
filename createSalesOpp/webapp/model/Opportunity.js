@@ -62,6 +62,10 @@ sap.ui.define([
             return this.products || [];
         },
 
+        setTenderMatchingStatus: function (status) {
+            if (status) this.tenderMatchingStatus = status;
+        },
+
         //<property>Changed function
         // countryCodeChanged: function (state, event) {
         //     //do something when countryCode changes in the view/ui
@@ -82,7 +86,8 @@ sap.ui.define([
                 "extensionPeriod",
                 "tenderMatchingStatus",
                 "institute_InstituteID",
-                "institute_CountryCode"
+                "institute_CountryCode",
+                "description"
             ]);
         },
 

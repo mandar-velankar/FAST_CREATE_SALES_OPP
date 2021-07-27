@@ -49,6 +49,10 @@ sap.ui.define([
 		restoreBackup:function(){
 			this.backupOpportunity && this.setSelectedOpportunity(this.createOpportunity(this.backupOpportunity));
 		},
+		setTenderMatchingStatus:function(status){
+			this.getSelectedOpportunity().setTenderMatchingStatus(status);
+			this.updateModel();
+		},
 
 
 		createOpportunity: function(data){
@@ -194,7 +198,8 @@ sap.ui.define([
 					"InstituteName": ""
 				},
 				"Institute_InstituteID": 0,
-				"Institute_CountryCode": ""
+				"Institute_CountryCode": "",
+				"Description": ""
             };
 
             const oOpportunity = this.createOpportunity(data);

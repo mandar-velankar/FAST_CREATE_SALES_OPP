@@ -547,7 +547,7 @@ sap.ui.define([
 					sap.m.MessageToast.show("Opportunity saved successfully...");
 
 					let oTable = this.byId("ProductsTableID");
-					if(oTable){
+					if(oTable && oTable.getItems().length > 0){
 						oTable.getItems().map(item => item._oDetailControl.setProperty("icon", "sap-icon://edit")) 
 						oTable.getModel("soa").refresh();
 					}
