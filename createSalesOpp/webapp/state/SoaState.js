@@ -2,9 +2,11 @@ sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
 	"../model/Opportunity",
 	"../model/Tender",
+	"../model/Institute",
+	"../model/Product",
 	"../libs/momentjs/moment.min",
 	"sap/ui/model/json/JSONModel",
-], function (BaseState, Opportunity, Tender, MomentJS, JSONModel) {
+], function (BaseState, Opportunity, Tender, Institute, Product, MomentJS, JSONModel) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.createsalesopportunity.state.SoaState", {
@@ -32,8 +34,12 @@ sap.ui.define([
 		},
 
 		setEditMode: function (sEditMode){
-			//sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
-			this.setProperty("editMode", sEditMode);
+			try {
+				sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
+				this.setProperty("editMode", sEditMode);
+			} catch {
+				this.setProperty("editMode", sEditMode);
+			}
 		},
 
 		getEditMode: function (){
@@ -177,13 +183,18 @@ sap.ui.define([
 				"TenderChannel": "Distributor",
 				"InstituteID": "",
 				"InstituteName": "",
-				"InstituteType": "Direct",
+				"InstituteType": "Private",
 				"PublicationDate": "",
 				"BidDueDate": "",
-				"ExpectedAwardDate":"",
-				"NextPublicationDye": "",
+				"ExpectedAwardDate":null,
+				"NextPublicationDate": null,
 				"ContractLength": 0,
 				"ExtensionPeriod": 0,
+				"Institute": {
+					"InstituteName": ""
+				},
+				"Institute_InstituteID": 0,
+				"Institute_CountryCode": ""
             };
 
             const oOpportunity = this.createOpportunity(data);
@@ -206,10 +217,11 @@ sap.ui.define([
 				"InstituteID": "",
 				"InstituteName": "",
 				"TenderChannel": "Direct",
+				"InstituteType": oSelectedOpportunity.instituteType,
 				"PublicationDate": oSelectedOpportunity.publicationDate,
 				"BidDueDate": oSelectedOpportunity.offerDueDate,
-				"AwardDate": oSelectedOpportunity.expectedAwardDate,
-				"NextPublicationDye": oSelectedOpportunity.nextPublicationDate,
+				"AwardDate": oSelectedOpportunity.expectedAwardDate ? oSelectedOpportunity.expectedAwardDate : null,
+				"NextPublicationDye": oSelectedOpportunity.nextPublicationDate ? oSelectedOpportunity.nextPublicationDate : null,
 				"TenderStatus": "Open",
 				"GroupPurchasing": Number(0),
 				"SALES_TYPE_ID": Number(0),
@@ -225,6 +237,39 @@ sap.ui.define([
             const oTender = new Tender(data);
             return oTender;
 		}, 	
+
+		createEmptyProduct: function(oOpportunity){
+			return new Product({
+				"iD": this.getNewUUID(),
+                "brandID": "",
+                "comment": "",
+                "opportunity_ID": oOpportunity.iD,
+				"editable": true
+			}, true);
+		},
+
+		addProduct: function(){
+			let oOpportunity = this.getSelectedOpportunity();
+			if(!oOpportunity.products){
+				oOpportunity.products = {}
+			}
+
+			oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
+			this.updateModel();
+		},
+
+		allProductsDisplayMode: function(){
+			let oOpportunity = this.getSelectedOpportunity();
+			if(oOpportunity.products){
+				oOpportunity.products.map(product => product.editable = false);
+			}
+			this.updateModel();
+		},
+
+		deleteProduct:function(iIndex){
+			this.data.selectedOpportunity.products.splice(iIndex, 1);
+			this.updateModel();
+		},
 
 		loadCountryChannels: async function(sCountry){
 			const aCountryChannels = await this.getService().loadCountryChannels(sCountry);

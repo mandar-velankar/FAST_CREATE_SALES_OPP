@@ -26,7 +26,7 @@
                             <core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
                         </Select>
                         <Label text="{i18n>insttyp}" design="Bold" required="true"/>
-                        <Select selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="true" items="{path: 'soa>/CountryChannels' }">
+                        <Select id="idInstTypeTender" selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="true" items="{path: 'soa>/CountryChannels' }">
                                 <core:Item text="{soa>ChannelName}" key="{soa>ChannelName}"/>
                         </Select>
 
