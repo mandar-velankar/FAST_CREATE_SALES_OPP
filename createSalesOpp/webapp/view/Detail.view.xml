@@ -106,7 +106,7 @@
 										singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
 							<form:content>
 								<core:Title text="Opportunity Details &amp; Type"/>
-								<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
+								<m:Label text="{i18n>reference}" design="Bold"  required="true"/>
 								<m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/>
 
 								<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
@@ -124,7 +124,7 @@
 								<m:Input showValueHelp="true" id="idInstituteNameOpp" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/institute/instituteName}" enabled="{= ${soa>/editMode} }"/>
 
 
-								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
+								<m:Label text="{i18n>channel}" design="Bold" required="true"/>
 								<m:Select selectedKey="{soa>/selectedOpportunity/tenderChannel}" enabled="{= ${soa>/editMode} }" change="onTenderChannelChange">
 									<m:items>
 										<core:Item text="Distributor" key="Distributor"/>

@@ -69,7 +69,7 @@
 					<columns>
 						<Column width="10%" visible="true">
 							<header>
-								<ObjectIdentifier title="{i18n>tenderref}" />
+								<ObjectIdentifier title="{i18n>reference}" />
 							</header>
 						</Column>
 						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
@@ -79,7 +79,7 @@
 						</Column>
 						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>typechnl}" />
+								<ObjectIdentifier title="{i18n>channel}" />
 							</header>
 						</Column>
 						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
