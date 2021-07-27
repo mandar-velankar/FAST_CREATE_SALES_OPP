@@ -404,8 +404,9 @@ sap.ui.define([
 			/* get the selected line in the table and set it as current opportunity */
 			// let sPath = event.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
 			const selectedObj = event.getSource().getBindingContext().getObject()//shorter using public functions
-
 			const selectedItemStatus = event.getSource().getBindingContext().getProperty("MainStatus");
+			await this.soaState.loadCountryInstitutes('CL');
+			
 			if (selectedItemStatus === "Participated") {
 				this.openTender(selectedObj.TenderID);
 				return true;

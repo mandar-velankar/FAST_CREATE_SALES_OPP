@@ -205,6 +205,7 @@ sap.ui.define([
 		},
 
 		onParticipateOpportunityPress: async function (oEvent) {
+			await this.soaState.loadCountryInstitutes('CL');
 			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
 			if (oSelectedOpportunity.mainStatus === "Participated") {
 				this.openTender(oSelectedOpportunity.tenderID);

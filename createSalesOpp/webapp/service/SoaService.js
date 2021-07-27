@@ -121,9 +121,11 @@ sap.ui.define([
 			const sInstitutesPath = "/PT_TMINST";
 			var aFilters = [];
 
-			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry),
-				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, sInstituteType)
-			);
+			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry));
+
+			if(sInstituteType){
+				aFilters.push(new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, sInstituteType));
+			}
 
 			var mParameters = {
 				filters: aFilters
