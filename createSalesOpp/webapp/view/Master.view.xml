@@ -33,7 +33,7 @@
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
-							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
+							<core:Item key="Quotation Submitted" text="Quotation Submitted"/>
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
 					</Select>
