@@ -685,7 +685,8 @@ sap.ui.define([
 		},
 
 		onAddProduct: function(oEvent){
-			this.soaState.addProduct();
+			//this.soaState.addProduct(); /* old code, to be removed, also from soaState */
+			
 		},
 
 		onDeleteProduct: function (oEvent) {

@@ -1,0 +1,172 @@
+<!-- Fragment for Add product - Product offer screen -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+	
+	<l:VerticalLayout width="100%" >
+		<l:content>
+			<VBox id="idProductSelectionLists" fitContainer="true" alignItems="Stretch">
+				<items>
+
+					<!-- message strip -->
+					<MessageStrip
+						id="brandsStripID"
+						text="Here you can add new products and/or change the order of the products.."
+						enableFormattedText="true"
+						showIcon="true"
+						showCloseButton="true"
+						class="sapUiMediumMarginBottom">
+					</MessageStrip>
+					
+					<!-- message strip -->
+					<MessageStrip
+						id="inProductsStripID"
+						type="Success"
+						text="{fastAppData>/MercadoInProductsMessage}"
+						visible="{= ${fastAppData>/MercadoInProductsMessage} === '' ? false : true }"
+						enableFormattedText="true"
+						showIcon="true"
+						showCloseButton="true"
+						class="sapUiMediumMarginBottom">
+					</MessageStrip>
+					
+					
+					<!-- Select brand -->
+					<MultiInput id="idBrandList" width="50%" enabled="true" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="brandNameList_f4" value="" placeholder="{i18n>SelectBrand}" tokenUpdate="onBrandTokenChange"/>
+					
+					<!-- empty line -->
+					<Label></Label>
+					
+					<!-- Source & Target table next to each other -->
+					<HBox width="100%">
+						<items>
+							<!-- Source -->
+							<VBox width="50%">
+								<items>
+									<!-- Input list -->
+									<Table
+										id="idListProductsInput"
+										mode="MultiSelect"
+										items="{
+											path: 'fastAppData>/ProductCollection'
+										}"
+										selectionChange="onSelectionChangeProductListInput"
+										includeItemInSelection="true">
+										
+										<headerToolbar>
+											<OverflowToolbar
+												visible="false"
+												id="idInfoToolbarInput" >
+												<Label id="idFilterLabelInput" />
+											</OverflowToolbar>
+										</headerToolbar>
+										<columns>
+											<Column>
+												<Text text="Products" />
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem>
+												<cells>
+													<VBox>
+														<Text text="{fastAppData>PRODUCT_NAME}" wrapping="false" />
+														<Text text="{fastAppData>PRODUCT_ID}" wrapping="false" />
+													</VBox>
+													
+												</cells>
+											</ColumnListItem>
+										</items>
+									</Table>
+									
+								</items>
+							</VBox>
+							
+							<!-- Add / Delete button -->
+							<HBox alignItems="Center" justifyContent="Center">
+								<items>
+									<!-- buttons -->
+									<VBox alignItems="Center">
+										<items>
+											<Button icon="sap-icon://arrow-right" type="Transparent" press="onPressAddProductToOutputList" ariaLabelledBy="actionButtonLabel"/>
+											<Button icon="sap-icon://arrow-left" type="Transparent" press="onPressRemoveProductFromOutputList" ariaLabelledBy="actionButtonLabel"/>
+										</items>	
+									</VBox>
+								</items>
+							</HBox>
+
+							<!-- Target -->
+							<VBox width="50%">
+								<items>													
+									<!--Output list -->
+									<Table
+										id="idListProductsOutput"
+										mode="SingleSelectMaster" 
+										items="{
+											path: 'fastAppData>/EditOffer/Product/results/',
+											sorter: {path: 'SORTER', descending: false}
+										}">
+										
+										<headerToolbar>
+											<OverflowToolbar visible="false" id="idInfoToolbarOutput" >
+												<Label id="idFilterLabelOutput" />
+												<ToolbarSpacer/>
+												<Button
+													icon="sap-icon://navigation-up-arrow"
+													tooltip="Move up"
+													press="moveUp"/>
+												<Button
+													icon="sap-icon://navigation-down-arrow"
+													tooltip="Move down"
+													press="moveDown"/>				
+											</OverflowToolbar>
+										</headerToolbar>
+										<columns>
+											<Column>
+												<Text text="Products" />
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem>
+												<cells>
+													<VBox>
+														<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="false" />
+														<Text text="{fastAppData>ProductCode}" wrapping="false" />
+														<!--<Text text="{fastAppData>SORTER}" wrapping="false" />-->
+													</VBox>
+													
+												</cells>
+											</ColumnListItem>
+										</items>
+									</Table>
+									
+								</items>
+							</VBox>												
+							
+							<!-- Move up / Move down button -->
+							<VBox alignItems="Center" justifyContent="Center">
+								<items>
+									<!-- buttons -->
+									<VBox alignItems="Center">
+										<items>
+												<Button
+													icon="sap-icon://navigation-up-arrow"
+													tooltip="Move up"
+													press="moveUp"/>
+												<Button
+													icon="sap-icon://navigation-down-arrow"
+													tooltip="Move down"
+													press="moveDown"/>	
+										</items>	
+									</VBox>
+								</items>
+							</VBox>	
+						</items>
+					</HBox>
+				</items>
+			</VBox>
+		</l:content>
+	</l:VerticalLayout>
+</core:FragmentDefinition>
