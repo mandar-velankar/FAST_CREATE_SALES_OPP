@@ -323,7 +323,7 @@ sap.ui.define([
 
 			this.getRouter().navTo("object", {
 				objectId: oItem.getBindingContext().getProperty("ID"),
-				layout: "TwoColumnsMidExpanded"
+				layout: "MidColumnFullScreen"
 			}, bReplace);
 		},
 
