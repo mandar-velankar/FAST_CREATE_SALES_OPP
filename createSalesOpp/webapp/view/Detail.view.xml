@@ -116,7 +116,7 @@
 								</form:content>
 						</form:SimpleForm>
 					</ObjectPageSubSection>	
-					
+
 					<ObjectPageSubSection mode="Expanded" title="">
 						<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"

@@ -249,6 +249,8 @@ sap.ui.define([
 				"iD": this.getNewUUID(),
                 "brandID": "",
                 "comment": "",
+				"recommendedPrice": 0.0,
+				"requestedQuantity": 0,
                 "opportunity_ID": oOpportunity.iD,
 				"editable": true
 			}, true);

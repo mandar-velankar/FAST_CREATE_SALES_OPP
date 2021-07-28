@@ -30,6 +30,8 @@ sap.ui.define([
             return this.getJSONObject([
                 "iD",
                 "brandID",
+                "recommendedPrice",
+                "requestedQuantity",
                 "comment",
                 "opportunity_ID"
             ]);
