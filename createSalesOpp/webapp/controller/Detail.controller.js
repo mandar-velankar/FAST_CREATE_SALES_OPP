@@ -205,14 +205,14 @@ sap.ui.define([
 		},
 
 		onParticipateOpportunityPress: async function (oEvent) {
-			await this.soaState.loadCountryInstitutes('CL');
 			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
+			await this.soaState.loadCountryInstitutes(oSelectedOpportunity.countryCode);
 			if (oSelectedOpportunity.mainStatus === "Participated") {
 				this.openTender(oSelectedOpportunity.tenderID);
 				return true;
 			}
 
-			await this.soaState.setTemporaryTender('CL');
+			await this.soaState.setTemporaryTender(oSelectedOpportunity.countryCode);
 			this._getParticipationDialog().open();
 		},
 
@@ -563,8 +563,9 @@ sap.ui.define([
 			var oView = this.getView();
 			let sId = oEvent.getSource().getId();
 			this._sInputId = sId.substring(sId.lastIndexOf('-') + 1);
+			let oOpportunity = this.soaState.getSelectedOpportunity();
 
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+			await this.soaState.loadCountryInstitutes(oOpportunity.countryCode, this.byId('idInstituteType').getSelectedKey());
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -604,7 +605,7 @@ sap.ui.define([
 					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
 					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
 					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
-					oOpportunity.institute_CountryCode = 'CL';
+					oOpportunity.institute_CountryCode = oOpportunity.countryCode;
 				}
 				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();

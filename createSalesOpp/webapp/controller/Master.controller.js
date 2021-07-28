@@ -82,9 +82,11 @@ sap.ui.define([
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 
-			this.soaState.loadCountryChannels("CL");
-			this.soaState.loadCountryClassifications("CL");
-			this.soaState.loadCountryTenderTypes("CL");
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
+
+			this.soaState.loadCountryChannels(sCountryCode);
+			this.soaState.loadCountryClassifications(sCountryCode);
+			this.soaState.loadCountryTenderTypes(sCountryCode);
 			
 		},
 
@@ -303,10 +305,10 @@ sap.ui.define([
 		_onMasterMatched: function () {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
-
-			// get Opportunities 
-			// const date = new Date('2019-10-15T12:50:51Z').toJSON();
-			// this.soaState.getOpportunities(date);
+			this.getCountries().then(() => {
+				this.setFilter();
+			})
+			.catch((error) => { });
 		},
 
 		/**
@@ -331,7 +333,8 @@ sap.ui.define([
 			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
 			let sId = this.soaState.getNewUUID();
-			let oOpportunity = this.soaState.createNewOpportunityObject(sId);
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
+			let oOpportunity = this.soaState.createNewOpportunityObject(sId, sCountryCode);
 
 			this.getRouter().navTo("object", {
 				objectId: sId,
@@ -403,9 +406,10 @@ sap.ui.define([
 		onParticipateOpportunityPress: async function (event) {
 			/* get the selected line in the table and set it as current opportunity */
 			// let sPath = event.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
 			const selectedObj = event.getSource().getBindingContext().getObject()//shorter using public functions
 			const selectedItemStatus = event.getSource().getBindingContext().getProperty("MainStatus");
-			await this.soaState.loadCountryInstitutes('CL');
+			await this.soaState.loadCountryInstitutes(sCountryCode);
 			
 			if (selectedItemStatus === "Participated") {
 				this.openTender(selectedObj.TenderID);
@@ -415,7 +419,7 @@ sap.ui.define([
 			const opportunity = this.createStateObject(selectedObj);
 			this.soaState.setSelectedOpportunity(opportunity);
 
-			await this.soaState.setTemporaryTender('CL');
+			await this.soaState.setTemporaryTender(sCountryCode);
 			this._getParticipationDialog().open();
 		},
 
@@ -604,15 +608,17 @@ sap.ui.define([
 		/* Filtering & sorting functionalities */
 		setFilter: function (oSelection) {
 
-			//var oFastAppData = Services.getFastAppDataModel();
-
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
 			var sSearch = this.byId("idSearch").getProperty("value");
 			var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
 			var sSubStatus = this.byId("idSlctSubStatusFilter").getSelectedKey();
 
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
-			var andFilters = [];
+			var andFilters = [
+				new sap.ui.model.Filter("CountryCode", "EQ", oCountry)
+			];
+
 
 			if (sStatus) {
 				andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
@@ -661,9 +667,31 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * Get list of countries 
+		 */
+		 getCountries: function(){
+			this.getView().setBusy(true);
+
+			return this.soaState.getCountries()
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getView().setBusy(true);
+				this.showNoAccessMessage("User ID doesn't have access");
+				throw(error);
+			});
+		},
+
 		/* handle search helps */
 		handleValueHelp: async function (oEvent) {
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstTypeTender').getSelectedKey());
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
+			await this.soaState.loadCountryInstitutes(sCountryCode, this.byId('idInstTypeTender').getSelectedKey());
 
 			var oView = this.getView();
 			this._sInputId = this.byId('idInstituteName').getId();
@@ -696,6 +724,7 @@ sap.ui.define([
 		},
 
 		_handleValueHelpClose: function (oEvent) {
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
 				var oInputfield = this.byId(this._sInputId);
@@ -706,7 +735,7 @@ sap.ui.define([
 					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
 					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
 					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
-					oOpportunity.institute_CountryCode = 'CL';
+					oOpportunity.institute_CountryCode = sCountryCode;
 				}
 				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();

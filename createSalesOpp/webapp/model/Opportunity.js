@@ -52,6 +52,10 @@ sap.ui.define([
             return this.iD; //using the ID as a reference to our sales opportunity in the tender application
         },
 
+        getCountryCode:function(){
+            return this.countryCode; //using the ID as a reference to our sales opportunity in the tender application
+        },
+
         setProducts: function (products) {
             if (products) {
                 this.products = products.map(prd => new Product(prd));
@@ -75,6 +79,7 @@ sap.ui.define([
         getJSON: function () {
             return this.getJSONObject([
                 "iD",
+                "countryCode",
                 "tenderReference",
                 "classification",
                 "tenderChannel",
@@ -99,7 +104,7 @@ sap.ui.define([
             return {
                 Institute: this.getInstituteName(),
                 TenderReference: this.getTenderReference(),
-                CountryCode:"CL",
+                CountryCode:this.getCountryCode(),
                 ClosingDate: this.getClosingDate(),
                 ...this.getJSONObject(["publicationDate"])
             };

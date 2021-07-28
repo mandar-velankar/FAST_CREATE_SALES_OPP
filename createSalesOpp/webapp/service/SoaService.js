@@ -2,9 +2,8 @@ sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseService",
 	"sap/ui/model/Sorter",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator",
-	"../model/UserInfo",
-], function (CoreService, Sorter, Filter, FilterOperator, UserInfo) {
+	"sap/ui/model/FilterOperator"
+], function (CoreService, Sorter, Filter, FilterOperator) {
 	"use strict";
 
 	var SoaService = CoreService.extend("com.bayer.tender.createsalesopportunity.service.SoaService", {
@@ -42,6 +41,19 @@ sap.ui.define([
 			};
 
 			return this.odata("/PublicSalesOpportunities").get(mParameters);
+		},
+
+		/**
+		 * Get a list of countries for current user
+		 */
+		 getCountries: function () {
+			
+			let sPath = "/TenderCountriesUser";
+
+			var mParameters = {
+			};
+
+			return this.odata(sPath).get(mParameters);
 		},
 
 		saveOpportunity: function (opportunity) {
@@ -134,63 +146,6 @@ sap.ui.define([
 
 			return this.odata(sInstitutesPath).get(mParameters);
 		},
-
-		//load User information from back-end and keep information in userinfo
-		/*loadUserInfo: function () {
-
-			var that = this;
-
-			//get user name of logedin user
-			this.getCurrentUser().then(user => {
-				UserInfo.setUserName(user.name);
-			}).catch(fail=>{
-				console.log("Not running on CF using CAP")
-			}).then(()=>{
-				var sUserName = UserInfo.getUserName();
-				//build path for getting the user external ID + next tender number
-				var sPathUserInfo = "/Users('" + encodeURIComponent(sUserName) + "')"; //"/UserInfo('" + UAT + "')"
-
-				//read the UserInfo view from the back-end
-				oFastDataCalls.read(sPathUserInfo, {
-					urlParameters: {
-						"$expand": "toUserCountries"
-					},
-					success: function (oData, oResponse) {
-
-						//keep tool ID
-						UserInfo.setToolID(oData.TOOL_ID);
-
-						//keep the external Active directory id
-						UserInfo.setCWID(oData.CWID);
-
-						//set the user email
-						UserInfo.setUserEmail(oData.UserEmail);
-
-						//keep the countries to which the user has access
-						oData.toUserCountries.results = that.sortByKeyAsc(oData.toUserCountries.results, "COUNTRY_NAME");
-						UserInfo.setUserCountries(oData.toUserCountries);
-
-						//let the callback be triggered: all data is loaded
-						oDeferred.resolve();
-
-					},
-					error: function fnError(oError) {
-
-						//Message
-						var sMessage = "User ID (" + UserInfo.getUserName() + ") doesn't have access";
-
-						//show error message
-						that.showNoAccessMessage(oError, sMessage);
-
-						oDeferred.reject(oError);
-
-					}
-				});
-			});
-
-			//return promise so the function can check if execution is done
-			return oDeferred.promise();
-		},*/
 
 		/* create & update */
 		createTender: function (oTender) {
