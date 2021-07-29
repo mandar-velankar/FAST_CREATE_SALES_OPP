@@ -608,18 +608,18 @@ sap.ui.define([
 		/* Filtering & sorting functionalities */
 		setFilter: function (oSelection) {
 
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			var sSearch = this.byId("idSearch").getProperty("value");
 			var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
 			var sSubStatus = this.byId("idSlctSubStatusFilter").getSelectedKey();
 
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
-			var andFilters = [
-				new sap.ui.model.Filter("CountryCode", "EQ", oCountry)
-			];
+			var andFilters = [];
 
-
+			if (oCountry != ""){
+				andFilters.push(new sap.ui.model.Filter("CountryCode", "EQ", oCountry));
+			}
 			if (sStatus) {
 				andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
 			}
