@@ -66,6 +66,10 @@ sap.ui.define([
             return this.products || [];
         },
 
+        getProductByProductPackId: function (productPackId) {
+            return this.getProducts().find(product => product.productPackId === productPackId);
+        },
+
         setTenderMatchingStatus: function (status) {
             if (status) this.tenderMatchingStatus = status;
         },

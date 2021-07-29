@@ -191,15 +191,15 @@
 									}">
 								<m:columns>
 									<m:Column >
-										<m:Label text="Brand ID" wrapping="true"/>  
+										<m:Label text="Brand" wrapping="true"/>  
 									</m:Column>
 									<!--<m:Column >
 										<m:Label text="Code" wrapping="true"/>  
-									</m:Column>
+									</m:Column>-->
 									<m:Column >
 										<m:Label text="Product" wrapping="true"/> 
 									</m:Column>
-									<m:Column >
+									<!--<m:Column >
 										<m:Label text="UoM" wrapping="true"/>
 									</m:Column>
 									<m:Column>
@@ -223,11 +223,12 @@
 								</m:columns>
 								<m:items>
 									<m:ColumnListItem id="productTableListID" 
-										type="{= ${soa>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
+										type="{= ${soa>/editMode} === true ? 'Active' : 'Navigation'}"
 										press="onProductItemSelect"
 										detailPress="onProductItemSelect">
 										<m:cells>
-											<m:Input value="{soa>brandID}" enabled="{= ${soa>editable} }"/>
+											<m:Text text="{soa>brandName}"/>
+											<m:Text text="{soa>productPackName}"/>
 											<!--<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>
 											<m:Text id="productQtyId" text="{soa>quantity}"/> 

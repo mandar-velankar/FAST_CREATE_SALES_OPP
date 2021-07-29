@@ -197,6 +197,26 @@ sap.ui.define([
 
 		},
 
+		/* everything related to countrybrands & products */
+		getBrands: async function () {
+			let sCountryCode = this.getSelectedOpportunity().countryCode;
+
+			const aCountryBrands = await this.getService().getCountryBrands(sCountryCode);
+			this.setProperty("countryBrands", aCountryBrands.data.results);
+        },
+
+		getBrandProducts: async function (){
+			let sCountryCode = this.getSelectedOpportunity().countryCode;
+
+			const aCountryBrandProducts = await this.getService().getCountryBrandProducts(sCountryCode);
+			this.setProperty("countryBrandProducts", aCountryBrandProducts.data.results);
+		},
+
+		setProductCollection: function (products) {
+			this.setProperty("productCollection", products);
+			this.updateModel();
+		},
+
 		//sorting an array of objects
 		sortByKeyAsc: function (array, key) {
 			if (array) {
@@ -288,13 +308,28 @@ sap.ui.define([
 			}, true);
 		},
 
-		addProduct: function(){
+		addExistingProduct: function(oOpportunity, oProduct){
+			return new Product({
+				"iD": this.getNewUUID(),
+                "brandID": oProduct.BRAND_ID,
+				"brandName": oProduct.BRAND_NAME,
+				"productPackName": oProduct.PRODUCT_NAME,
+				"productPackId": oProduct.PRODUCT_ID,
+                "comment": "",
+				"recommendedPrice": 0.0,
+				"requestedQuantity": 0,
+                "opportunity_ID": oOpportunity.iD,
+				"editable": true
+			}, true);
+		},
+
+		addProduct: function(oAddedProduct){
 			let oOpportunity = this.getSelectedOpportunity();
 			if(Object.entries(oOpportunity.products).length === 0){
-				var oProduct = this.createEmptyProduct(oOpportunity, true)
+				var oProduct = this.addExistingProduct(oOpportunity, oAddedProduct)
 				oOpportunity.products = [oProduct];
 			} else {
-				oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
+				oOpportunity.products.push(this.addExistingProduct(oOpportunity, oAddedProduct));
 			}
 			
 			this.updateModel();

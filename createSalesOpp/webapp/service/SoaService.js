@@ -77,6 +77,80 @@ sap.ui.define([
 			return this.odata(sKey).get();
 		},
 
+		getCountryBrands: function (sCountryCode) {
+            let sPath = "/CountryBrands";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+
+				var oCountryCodeFilter = new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode
+				});
+
+				aFilters.push(oCountryCodeFilter);
+			}
+
+            
+			var mParameters = {
+				filters: aFilters
+				
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },
+
+		/*getCountryBrandProducts: function (sCountryCode, sBrandId) {
+            let sPath = "/CountryBrandProducts";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+				aFilters.push(new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode}));
+			}
+
+			if (sBrandId){
+				aFilters.push(new Filter({
+					path: 'BRAND_ID',
+					operator: FilterOperator.EQ,
+					value1: sBrandId}));
+			}
+
+            
+			var mParameters = {
+				filters: aFilters
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },*/
+
+		getCountryBrandProducts: function (sCountryCode) {
+            let sPath = "/CountryBrandProducts";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+				aFilters.push(new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode}));
+			}
+            
+			var mParameters = {
+				filters: aFilters
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },
+
 		loadCountryChannels: function (sCountry) {
 			const sCountryChannelsPath = "/CountryChannels";
 			var aFilters = [];
