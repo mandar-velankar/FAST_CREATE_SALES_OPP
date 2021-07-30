@@ -265,7 +265,11 @@ sap.ui.define([
 		createNewTenderObject: async function(sCountry){ 
 			const sTenderId = await this.getNewTenderID(sCountry);
 			const oSelectedOpportunity = this.getModel('soa').getProperty('/selectedOpportunity');
-			let   oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.InstituteID === this.data.selectedOpportunity.institute.instituteID)
+			let   oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.InstituteID === this.data.selectedOpportunity.institute.instituteID);
+			if(!oDefaultInstitute){
+				//straight from create
+				oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.InstituteID === this.data.selectedOpportunity.instituteID);
+			}
 
             const data = {
                 //"ID" : this.create_UUID(),
