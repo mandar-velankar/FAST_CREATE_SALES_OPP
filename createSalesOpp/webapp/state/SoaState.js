@@ -258,6 +258,7 @@ sap.ui.define([
             };
 
             const oOpportunity = this.createOpportunity(data);
+			oOpportunity.setTenderMatchingStatus("Out");
 			this.setSelectedOpportunity(oOpportunity);
             return oOpportunity;
 		},
