@@ -325,7 +325,7 @@ sap.ui.define([
 
 		addProduct: function(oAddedProduct){
 			let oOpportunity = this.getSelectedOpportunity();
-			if(Object.entries(oOpportunity.products).length === 0){
+			if(!oOpportunity.products || Object.entries(oOpportunity.products).length === 0){
 				var oProduct = this.addExistingProduct(oOpportunity, oAddedProduct)
 				oOpportunity.products = [oProduct];
 			} else {
