@@ -689,6 +689,22 @@ sap.ui.define([
 		},
 
 		/* Everything related to the add product functionality */
+		clearSelectedProductInputList: function () {
+
+			var oList = this.byId("idListProductsInput");
+			oList.setSelectedContextPaths();
+
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			/*var aContexts = oList.getSelectedItems();
+			if(aContexts.length > 0){
+				aContexts.map(selectedItem => selectedItem.setProperty("selected", false));
+			}
+			this.soaState.updateModel();*/
+
+		},
+
 		onAddProduct: function(oEvent){
 			//this.soaState.addProduct(); /* old code, to be removed, also from soaState */
 
@@ -697,6 +713,15 @@ sap.ui.define([
 			this.soaState.getBrandProducts();
 
 			this._getAddProductDialog().open();
+
+			/* clear the left side of the screen - selected brands & products*/
+			
+			this.clearSelectedProductInputList();
+			var oBrandList = this.byId("idBrandList");
+			var aBrandTokens = [];
+			oBrandList.setTokens(aBrandTokens);
+
+			this.soaState.setProductCollection([]);
 		},
 
 		onAddProductDialogConfirm: function(oEvent){
