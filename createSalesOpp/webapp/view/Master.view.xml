@@ -88,9 +88,19 @@
 								<ObjectIdentifier title="{i18n>clasficn}" />
 							</header>
 						</Column>
-						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="{i18n>channel}" />
+							</header>
+						</Column>
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="Status" />
+							</header>
+						</Column>
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="Substatus" />
 							</header>
 						</Column>
 						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
@@ -131,6 +141,8 @@
 								<Text text="{TenderReference}"/>
 								<Text text="{Classification}"/>
 								<Text text="{TenderChannel}"/>
+								<Text text="{MainStatus}"/>
+								<Text text="{SubStatus}"/>
 								<Text text="{
 										path: 'PublicationDate',
 										type: 'sap.ui.model.type.Date',
