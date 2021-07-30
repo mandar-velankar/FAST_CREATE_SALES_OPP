@@ -333,14 +333,21 @@ sap.ui.define([
 			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
 			let sId = this.soaState.getNewUUID();
-			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
-			let oOpportunity = this.soaState.createNewOpportunityObject(sId, sCountryCode);
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
+			if(sCountryCode === ""){
+				//user should select a country first from the filter. Show error message.
+				sap.m.MessageBox.show(`Please select a country first, for which you would like to create a new opportunity.`, {
+					title: "Error",
+					icon: sap.m.MessageBox.Icon.ERROR
+				});
+			} else {
+				this.soaState.createNewOpportunityObject(sId, sCountryCode);
 
-			this.getRouter().navTo("object", {
-				objectId: sId,
-				layout: "TwoColumnsMidExpanded"
-			}, bReplace);
-
+				this.getRouter().navTo("object", {
+					objectId: sId,
+					layout: "TwoColumnsMidExpanded"
+				}, bReplace);
+			}
 		},
 
 		/**
