@@ -73,12 +73,17 @@
 						growingThreshold="15"
 						growingScrollToLoad="false">
 					<columns>
+						<Column width="6%" visible="true">
+							<header>
+								<ObjectIdentifier title="{i18n>countryCode}" />
+							</header>
+						</Column>
 						<Column width="10%" visible="true">
 							<header>
 								<ObjectIdentifier title="{i18n>reference}" />
 							</header>
 						</Column>
-						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
+						<Column width="19%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
 							<header>
 								<ObjectIdentifier title="{i18n>clasficn}" />
 							</header>
@@ -122,6 +127,7 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">
 							<cells>
+								<Text text="{CountryCode}"/>
 								<Text text="{TenderReference}"/>
 								<Text text="{Classification}"/>
 								<Text text="{TenderChannel}"/>
