@@ -336,9 +336,8 @@ sap.ui.define([
 			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			if(sCountryCode === ""){
 				//user should select a country first from the filter. Show error message.
-				sap.m.MessageBox.show(`Please select a country first, for which you would like to create a new opportunity.`, {
-					title: "Error",
-					icon: sap.m.MessageBox.Icon.ERROR
+				sap.m.MessageBox.error(`Please select a country first, for which you would like to create a new opportunity.`, {
+					title: "Country missing"
 				});
 			} else {
 				this.soaState.createNewOpportunityObject(sId, sCountryCode);
