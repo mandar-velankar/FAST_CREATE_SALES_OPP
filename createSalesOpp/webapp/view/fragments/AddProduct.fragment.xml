@@ -1,0 +1,11 @@
+<!-- Fragment for adding a product on Contract tab -->
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core">
+	<Dialog
+      title="Add Product"
+	  stretch="true">
+	  <buttons>
+	  	<Button id="testBtn" text="Apply" press="onAddProductDialogConfirm" />
+	  </buttons>
+	  <core:Fragment fragmentName="com.bayer.tender.createsalesopportunity.view.fragments.SelectBrandProductList" type="XML" />
+   	</Dialog>
+</core:FragmentDefinition>

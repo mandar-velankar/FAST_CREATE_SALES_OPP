@@ -7,7 +7,10 @@ sap.ui.define([
 	"sap/m/library",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator) {
+	"sap/m/MessageToast",
+	"sap/m/Token",
+	"sap/m/Tokenizer",
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator, MessageToast, Token, Tokenizer) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -206,12 +209,13 @@ sap.ui.define([
 
 		onParticipateOpportunityPress: async function (oEvent) {
 			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
+			await this.soaState.loadCountryInstitutes(oSelectedOpportunity.countryCode);
 			if (oSelectedOpportunity.mainStatus === "Participated") {
 				this.openTender(oSelectedOpportunity.tenderID);
 				return true;
 			}
 
-			await this.soaState.setTemporaryTender('CL');
+			await this.soaState.setTemporaryTender(oSelectedOpportunity.countryCode);
 			this._getParticipationDialog().open();
 		},
 
@@ -545,11 +549,11 @@ sap.ui.define([
 					this.oObjectPageLayout.setShowFooter(false);
 					sap.m.MessageToast.show("Opportunity saved successfully...");
 
-					let oTable = this.byId("ProductsTableID");
-					if(oTable){
+					/*let oTable = this.byId("ProductsTableID");
+					if(oTable && oTable.getItems().length > 0){
 						oTable.getItems().map(item => item._oDetailControl.setProperty("icon", "sap-icon://edit")) 
 						oTable.getModel("soa").refresh();
-					}
+					}*/
 				});
 			} else {
 				this.getView().setBusy(false);
@@ -562,8 +566,9 @@ sap.ui.define([
 			var oView = this.getView();
 			let sId = oEvent.getSource().getId();
 			this._sInputId = sId.substring(sId.lastIndexOf('-') + 1);
+			let oOpportunity = this.soaState.getSelectedOpportunity();
 
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+			await this.soaState.loadCountryInstitutes(oOpportunity.countryCode, this.byId('idInstituteType').getSelectedKey());
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -603,7 +608,7 @@ sap.ui.define([
 					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
 					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
 					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
-					oOpportunity.institute_CountryCode = 'CL';
+					oOpportunity.institute_CountryCode = oOpportunity.countryCode;
 				}
 				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
@@ -683,8 +688,130 @@ sap.ui.define([
 			}
 		},
 
+		/* Everything related to the add product functionality */
 		onAddProduct: function(oEvent){
-			this.soaState.addProduct();
+			//this.soaState.addProduct(); /* old code, to be removed, also from soaState */
+
+			// get the brand products
+			this.soaState.getBrands();
+			this.soaState.getBrandProducts();
+
+			this._getAddProductDialog().open();
+		},
+
+		onAddProductDialogConfirm: function(oEvent){
+			var oProductsTable = this.byId("ProductsTableID");
+			let oProductsDetail = this.byId("idProductDetailSection");
+
+			//sort again by refresh items binding
+			oProductsTable.getBinding("items").refresh(true);
+			oProductsDetail.setVisible(false);
+
+			this._getAddProductDialog().close();
+		},
+
+		_getAddProductDialog : function () { 
+
+			if (!this._oAddProductDialog) {
+			    this._oAddProductDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.createsalesopportunity.view.fragments.AddProduct", this);
+			    this.getView().addDependent(this._oAddProductDialog);
+            }
+
+            return this._oAddProductDialog;
+		},
+
+		//Select Brand: when you click on the F4 for Brands on adding a product to the offer of the tender
+		brandNameList_f4: function () { 
+
+			const that = this;
+
+			if (!this._valueHelpSelectBrandDialog) {
+				this._valueHelpSelectBrandDialog = new sap.m.SelectDialog(this.createId("idValueHelpSelectBrandDialog"), {
+					title: "Brand Name",
+					multiSelect: true,
+					rememberSelections: true,
+					items: {
+						path: "soa>/countryBrands",
+						template: new sap.m.StandardListItem({
+							title: "{soa>BRAND_NAME}",
+							description: "{soa>BRAND_ID}",
+							selected: "{soa>SELECTED}"
+						})
+					},
+					liveChange: function (oEvent) {
+						var sValue = oEvent.getParameter("value");
+						var oFilter = new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue);
+						oEvent.getSource().getBinding("items").filter([oFilter]);
+					},
+					confirm: function (oEvent) {
+						that._handleCloseBrandNameList(oEvent);
+					},
+					cancel: function (oEvent) {
+						that._handleCloseBrandNameList(oEvent);
+					}
+				});
+			}
+
+			this.getView().addDependent(this._valueHelpSelectBrandDialog);
+			this._valueHelpSelectBrandDialog.open();
+
+		},
+
+		_handleCloseBrandNameList: function (oEvent) { 
+
+			var that = this;
+
+			//selected brands
+			var aContexts = oEvent.getParameter("selectedContexts");
+			if (aContexts && aContexts.length) {
+
+				MessageToast.show("The following brands were selected: " + aContexts.map(function (oContext) {
+					return oContext.getObject().BRAND_NAME;
+				}).join(", "));
+
+				//get multi input box
+				var oBrandList = this.byId("idBrandList");
+				var aBrandTokens = [];
+				var aBrands = [];
+
+				//push the selected brands 
+				aContexts.map(function (oContext) {
+
+					var oToken = new Token({
+						text: oContext.getObject().BRAND_NAME,
+						key: oContext.getObject().BRAND_ID
+					});
+					aBrandTokens.push(oToken);
+
+					//Brands for filtering
+					var oBrand = {
+						BRAND_ID: oContext.getObject().BRAND_ID
+					}
+					aBrands.push(oBrand);
+
+				});
+
+				//add the array of tokens to the multi input
+				oBrandList.setTokens(aBrandTokens);
+
+				const aFilteredBrandProducts = this.filterBrandProducts(aBrands);
+				this.soaState.setProductCollection(aFilteredBrandProducts);
+
+			} else {
+
+				MessageToast.show("No new item was selected.");
+
+			}
+		},
+
+		filterBrandProducts: function(aBrands){
+			let aBrandProducts = this.soaState.data.countryBrandProducts;
+			const aFilteredBrandProducts = aBrandProducts.filter((elem) => aBrands.find(({ BRAND_ID }) => elem.BRAND_ID === BRAND_ID));
+			const uniqueProducts = [];
+
+			aFilteredBrandProducts.forEach(x => uniqueProducts.filter(a => a.PRODUCT_ID === x.PRODUCT_ID).length > 0 ? null : uniqueProducts.push(x));
+
+			return uniqueProducts;
 		},
 
 		onDeleteProduct: function (oEvent) {
@@ -707,6 +834,44 @@ sap.ui.define([
 
 
         },
+
+		onPressAddProductToOutputList: function(){ 
+			const oSourceTable = this.byId("idListProductsInput");
+			const oSelectedItems = oSourceTable.getSelectedItems();
+			const oSelectedProducts = oSelectedItems.map(item => item.getBindingContext("soa").getObject());
+
+			oSelectedProducts.map(this.addSelectedProductToTarget.bind(this));
+
+		},
+
+		//TODO async & await not supported in all browsers (IE not supported), (we could use the transpiler in the yaml file (compared to tender app))
+		addSelectedProductToTarget: async function(product) { 
+			const productPackId = product.PRODUCT_ID;
+
+			const bProductIsAlreadyAddedToTheTargetTable = this.soaState.getSelectedOpportunity().getProductByProductPackId(productPackId);
+
+			if(!bProductIsAlreadyAddedToTheTargetTable){
+				this.soaState.addProduct(product);
+				this.soaState.updateModel();
+			}else {
+				sap.m.MessageBox.show(`Product(${product.PRODUCT_NAME}) is already added.`, {
+					title: "Error",
+					icon: sap.m.MessageBox.Icon.ERROR
+				});
+			}
+		},
+
+		onPressRemoveProductFromOutputList:function(){
+			const oTargetTable = this.byId("idListProductsOutput");
+			const oSelectedItem = oTargetTable.getSelectedItem();
+			const oSelectedProduct = oSelectedItem.getBindingContext("soa").getObject();
+			let oSelectedProducts = this.soaState.getSelectedOpportunity().products;
+
+			if(oSelectedProducts && oSelectedProducts.length > 0){
+				this.soaState.deleteProduct(oSelectedProducts.findIndex( product => product.productPackId = oSelectedProduct.productPackId));
+			}
+
+		},
 
 	});
 

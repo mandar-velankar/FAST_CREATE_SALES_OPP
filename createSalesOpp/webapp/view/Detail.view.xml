@@ -100,13 +100,30 @@
 		<sections>
 			<!-- OPPORTUNITY INFORMATION TAB -->
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
+					<ObjectPageSubSection mode="Expanded" title="Comment">
+						<actions>
+							<m:Switch state="{= ${soa>/selectedOpportunity/tenderMatchingStatus} === 'In' ? true : false }" change="onTenderMatchingStatusChange" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
+								<m:layoutData>
+									<m:FlexItemData growFactor="1" />
+								</m:layoutData>
+							</m:Switch>
+						</actions>
+						<form:SimpleForm id="opportunityCommentFormId" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
+								emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" backgroundDesign="Solid">
+								<form:content>
+									<!-- <core:Title text="Comment"/>-->
+									<m:TextArea value="{soa>/selectedOpportunity/description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+								</form:content>
+						</form:SimpleForm>
+					</ObjectPageSubSection>	
+
 					<ObjectPageSubSection mode="Expanded" title="">
 						<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
 										singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
 							<form:content>
 								<core:Title text="Opportunity Details &amp; Type"/>
-								<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
+								<m:Label text="{i18n>reference}" design="Bold"  required="true"/>
 								<m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/>
 
 								<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
@@ -124,7 +141,7 @@
 								<m:Input showValueHelp="true" id="idInstituteNameOpp" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/institute/instituteName}" enabled="{= ${soa>/editMode} }"/>
 
 
-								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
+								<m:Label text="{i18n>channel}" design="Bold" required="true"/>
 								<m:Select selectedKey="{soa>/selectedOpportunity/tenderChannel}" enabled="{= ${soa>/editMode} }" change="onTenderChannelChange">
 									<m:items>
 										<core:Item text="Distributor" key="Distributor"/>
@@ -174,15 +191,15 @@
 									}">
 								<m:columns>
 									<m:Column >
-										<m:Label text="Brand ID" wrapping="true"/>  
+										<m:Label text="Brand" wrapping="true"/>  
 									</m:Column>
 									<!--<m:Column >
 										<m:Label text="Code" wrapping="true"/>  
-									</m:Column>
+									</m:Column>-->
 									<m:Column >
 										<m:Label text="Product" wrapping="true"/> 
 									</m:Column>
-									<m:Column >
+									<!--<m:Column >
 										<m:Label text="UoM" wrapping="true"/>
 									</m:Column>
 									<m:Column>
@@ -206,11 +223,12 @@
 								</m:columns>
 								<m:items>
 									<m:ColumnListItem id="productTableListID" 
-										type="{= ${soa>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
+										type="{= ${soa>/editMode} === true ? 'Active' : 'Navigation'}"
 										press="onProductItemSelect"
 										detailPress="onProductItemSelect">
 										<m:cells>
-											<m:Input value="{soa>brandID}" enabled="{= ${soa>editable} }"/>
+											<m:Text text="{soa>brandName}"/>
+											<m:Text text="{soa>productPackName}"/>
 											<!--<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>
 											<m:Text id="productQtyId" text="{soa>quantity}"/> 

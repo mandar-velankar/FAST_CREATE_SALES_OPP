@@ -4,9 +4,10 @@ sap.ui.define([
 	"../model/Tender",
 	"../model/Institute",
 	"../model/Product",
+	"../model/Country",
 	"../libs/momentjs/moment.min",
 	"sap/ui/model/json/JSONModel",
-], function (BaseState, Opportunity, Tender, Institute, Product, MomentJS, JSONModel) {
+], function (BaseState, Opportunity, Tender, Institute, Product, Country, MomentJS, JSONModel) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.createsalesopportunity.state.SoaState", {
@@ -48,6 +49,10 @@ sap.ui.define([
 
 		restoreBackup:function(){
 			this.backupOpportunity && this.setSelectedOpportunity(this.createOpportunity(this.backupOpportunity));
+		},
+		setTenderMatchingStatus:function(status){
+			this.getSelectedOpportunity().setTenderMatchingStatus(status);
+			this.updateModel();
 		},
 
 
@@ -162,6 +167,56 @@ sap.ui.define([
 			);
 		},
 
+		/**
+		 * get list of country for current user
+		 */
+		 getCountries: function (){
+								
+			this.setProperty("countries", []);
+			const ctrPromise = this.getService().getCountries().then(countries => {
+				countries = countries.data.results;
+				if(countries.length > 0){
+					//add empty line
+					var oEmptyCountry = {
+						CountryCode: '',
+						CountryName: ''
+					};
+					countries.push(oEmptyCountry);
+					return countries.map(country => {
+						return new Country(country);
+					});
+				} else {
+					throw 'User not allowed';
+				}
+			});
+			return Promise.all([ctrPromise]).then((values) => {
+				const [countries] = values;
+				this.setProperty("countries", [...countries]);
+				return this.getProperty("countries");
+			});			
+
+		},
+
+		/* everything related to countrybrands & products */
+		getBrands: async function () {
+			let sCountryCode = this.getSelectedOpportunity().countryCode;
+
+			const aCountryBrands = await this.getService().getCountryBrands(sCountryCode);
+			this.setProperty("countryBrands", aCountryBrands.data.results);
+        },
+
+		getBrandProducts: async function (){
+			let sCountryCode = this.getSelectedOpportunity().countryCode;
+
+			const aCountryBrandProducts = await this.getService().getCountryBrandProducts(sCountryCode);
+			this.setProperty("countryBrandProducts", aCountryBrandProducts.data.results);
+		},
+
+		setProductCollection: function (products) {
+			this.setProperty("productCollection", products);
+			this.updateModel();
+		},
+
 		//sorting an array of objects
 		sortByKeyAsc: function (array, key) {
 			if (array) {
@@ -174,10 +229,11 @@ sap.ui.define([
 
 		},
 
-		createNewOpportunityObject: async function(sObjectId){ 
+		createNewOpportunityObject: async function(sObjectId, sCountryCode){ 
 
             const data = {
                 "ID" : sObjectId,
+				"CountryCode": sCountryCode,
 				"Classification": "Contract",
 				"TenderReference": "",
 				"TenderChannel": "Distributor",
@@ -194,7 +250,8 @@ sap.ui.define([
 					"InstituteName": ""
 				},
 				"Institute_InstituteID": 0,
-				"Institute_CountryCode": ""
+				"Institute_CountryCode": "",
+				"Description": ""
             };
 
             const oOpportunity = this.createOpportunity(data);
@@ -205,6 +262,7 @@ sap.ui.define([
 		createNewTenderObject: async function(sCountry){ 
 			const sTenderId = await this.getNewTenderID(sCountry);
 			const oSelectedOpportunity = this.getModel('soa').getProperty('/selectedOpportunity');
+			let   oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.InstituteID === this.data.selectedOpportunity.institute.instituteID)
 
             const data = {
                 //"ID" : this.create_UUID(),
@@ -214,8 +272,8 @@ sap.ui.define([
 				"Active": 1,
 				"Classification": "Contract",
 				"TenderName": "",
-				"InstituteID": "",
-				"InstituteName": "",
+				"InstituteID": oDefaultInstitute ? oDefaultInstitute.InstituteID : "",
+				"InstituteName": oDefaultInstitute ? oDefaultInstitute.InstituteName : "",
 				"TenderChannel": "Direct",
 				"InstituteType": oSelectedOpportunity.instituteType,
 				"PublicationDate": oSelectedOpportunity.publicationDate,
@@ -243,18 +301,35 @@ sap.ui.define([
 				"iD": this.getNewUUID(),
                 "brandID": "",
                 "comment": "",
+				"recommendedPrice": 0.0,
+				"requestedQuantity": 0,
                 "opportunity_ID": oOpportunity.iD,
 				"editable": true
 			}, true);
 		},
 
-		addProduct: function(){
+		addExistingProduct: function(oOpportunity, oProduct){
+			return new Product({
+				"iD": this.getNewUUID(),
+                "brandID": oProduct.BRAND_ID,
+				"brandName": oProduct.BRAND_NAME,
+				"productPackName": oProduct.PRODUCT_NAME,
+				"productPackId": oProduct.PRODUCT_ID,
+                "comment": "",
+				"recommendedPrice": 0.0,
+				"requestedQuantity": 0,
+                "opportunity_ID": oOpportunity.iD,
+				"editable": true
+			}, true);
+		},
+
+		addProduct: function(oAddedProduct){
 			let oOpportunity = this.getSelectedOpportunity();
 			if(Object.entries(oOpportunity.products).length === 0){
-				var oProduct = this.createEmptyProduct(oOpportunity, true)
+				var oProduct = this.addExistingProduct(oOpportunity, oAddedProduct)
 				oOpportunity.products = [oProduct];
 			} else {
-				oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
+				oOpportunity.products.push(this.addExistingProduct(oOpportunity, oAddedProduct));
 			}
 			
 			this.updateModel();
