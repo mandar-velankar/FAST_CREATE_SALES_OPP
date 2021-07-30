@@ -73,7 +73,7 @@
 						growingThreshold="15"
 						growingScrollToLoad="false">
 					<columns>
-						<Column width="6%" visible="true">
+						<Column width="6%" minScreenWidth="920px" demandPopin="false" popinDisplay="Inline" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<header>
 								<ObjectIdentifier title="{i18n>countryCode}" />
 							</header>
