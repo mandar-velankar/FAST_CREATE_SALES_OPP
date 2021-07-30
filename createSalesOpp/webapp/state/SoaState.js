@@ -129,7 +129,10 @@ sap.ui.define([
 		},
 
 		getProductFromSelectedOpportunityByProductId: function(productId){
-			return this.getSelectedOpportunity().getProducts().find(prod => prod.iD == productId);
+			let oProducts = this.getSelectedOpportunity().getProducts();
+			if(oProducts && oProducts.length > 0){
+				return this.getSelectedOpportunity().getProducts().find(prod => prod.iD == productId);
+			}
 		},
 
 		/**
