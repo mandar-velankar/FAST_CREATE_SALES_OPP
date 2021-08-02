@@ -19,7 +19,8 @@ sap.ui.define([
 				opportunities: [],
 				selectedOpportunity: {},
 				selectedProduct: {},
-				editMode: false
+				editMode: false,
+				creationMode: false,
 				//pricing: new Pricing()
 			};
 			// , true, (changes) => {
@@ -45,6 +46,14 @@ sap.ui.define([
 
 		getEditMode: function (){
 			return this.getProperty("editMode");
+		},
+
+		setCreationMode: function(sCreationMode){
+			this.setProperty("creationMode", sCreationMode);
+		},
+
+		getCreationMode: function(){
+			return this.getProperty("creationMode");
 		},
 
 		restoreBackup:function(){

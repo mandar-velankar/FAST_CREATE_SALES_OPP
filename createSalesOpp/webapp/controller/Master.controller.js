@@ -348,6 +348,7 @@ sap.ui.define([
 				});
 			} else {
 				this.soaState.createNewOpportunityObject(sId, sCountryCode);
+				this.soaState.setCreationMode(true);
 
 				this.getRouter().navTo("object", {
 					objectId: sId,

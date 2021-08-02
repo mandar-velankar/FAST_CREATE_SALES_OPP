@@ -189,6 +189,7 @@ sap.ui.define([
 			this.getRouter().navTo("master");
 			this.soaState.clearSelectedOpportunity();
 			this.soaState.setEditMode(false);
+			this.soaState.setCreationMode(false);
 		},
 
 		/**
@@ -546,6 +547,7 @@ sap.ui.define([
 					this.getView().setBusy(false);
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
+					this.soaState.setCreationMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
 					sap.m.MessageToast.show("Opportunity saved successfully...");
 
