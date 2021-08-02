@@ -82,11 +82,18 @@ sap.ui.define([
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 
-			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
+			this.getCountries().then(() => {
+				this.byId("idSlctCountry").setSelectedKey(this.soaState.data.countries[0].CountryCode)
+				this.setFilter();
+				let sCountryCode = this.byId("idSlctCountry").getSelectedItem().getKey();
 
-			this.soaState.loadCountryChannels(sCountryCode);
-			this.soaState.loadCountryClassifications(sCountryCode);
-			this.soaState.loadCountryTenderTypes(sCountryCode);
+				this.soaState.loadCountryChannels(sCountryCode);
+				this.soaState.loadCountryClassifications(sCountryCode);
+				this.soaState.loadCountryTenderTypes(sCountryCode);
+			})
+			.catch((error) => { });
+
+
 			
 		},
 
@@ -305,10 +312,10 @@ sap.ui.define([
 		_onMasterMatched: function () {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
-			this.getCountries().then(() => {
+			/*this.getCountries().then(() => {
 				this.setFilter();
 			})
-			.catch((error) => { });
+			.catch((error) => { });*/
 		},
 
 		/**

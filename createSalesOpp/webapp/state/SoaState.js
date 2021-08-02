@@ -179,12 +179,6 @@ sap.ui.define([
 			const ctrPromise = this.getService().getCountries().then(countries => {
 				countries = countries.data.results;
 				if(countries.length > 0){
-					//add empty line
-					var oEmptyCountry = {
-						CountryCode: '',
-						CountryName: ''
-					};
-					countries.push(oEmptyCountry);
 					return countries.map(country => {
 						return new Country(country);
 					});
@@ -196,7 +190,7 @@ sap.ui.define([
 				const [countries] = values;
 				this.setProperty("countries", [...countries]);
 				return this.getProperty("countries");
-			});			
+			});		
 
 		},
 
