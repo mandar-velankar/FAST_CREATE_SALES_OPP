@@ -299,10 +299,10 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: async function () {
+		onSaveParticipation: async function (oEvent) {
 
 			const oTender = this.getNewTender();
-			var that = this;
+			let oView = oEvent ? oEvent.oSource : undefined;
 
 			if (this._validateNewTender(oTender)) {
 				try {
@@ -310,11 +310,21 @@ sap.ui.define([
 					await this.createTender(oTender);
 					BusyIndicator.hide()
 					this._oParticipationDialog.close();
-					this.getModel().refresh();
 
 					let opp = this.getSelectedOpportunity();
 					opp.mainStatus = "Participated";
 					this.setSelectedOpportunity(opp);
+					this.getModel().refresh();
+
+					/* refresh master list binding */
+					let oParent = oView ? oView.getParent() : undefined;
+						oParent = oParent ? oParent.getParent() : undefined;
+					let oList = oParent ? oParent.byId('list') : undefined; //get list from master screen
+					if(oList){
+						oList.getBinding("items").refresh(true);
+						oList.getModel().refresh(true);
+					}
+
 					sap.m.MessageToast.show("Tender creation done...");
 					//successfully created tender
 					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {

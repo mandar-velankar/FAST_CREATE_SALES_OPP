@@ -416,6 +416,7 @@ sap.ui.define([
 
 		/* handling participate button press */
 		onParticipateOpportunityPress: async function (oEvent) {
+			this._oView = this.getView();
 			this.soaState.onParticipateOpportunity(oEvent.getSource().getBindingContext(), this.getView());
 			let oParticipationDialog = await this.soaState.getParticipationDialog(this.getView());
 			oParticipationDialog.open();
@@ -426,11 +427,9 @@ sap.ui.define([
 			this.soaState.clearSelectedOpportunity();
 		},
 
-		onSaveParticipation: async function () {
-			await this.soaState.onSaveParticipation();
-			this.getView().byId('list').getModel().refresh(true);
-			this._oList.getBinding("items").refresh(true);
-		},
+		/*onSaveParticipation: async function () {
+			await this.soaState.onSaveParticipation(this._oView);
+		},*/
 
 		/* Filtering & sorting functionalities */
 		setFilter: function (oSelection) {
