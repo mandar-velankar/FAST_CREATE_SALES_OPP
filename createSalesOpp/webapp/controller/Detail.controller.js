@@ -186,6 +186,14 @@ sap.ui.define([
 			this.getModel("appView").setProperty("/actionButtonsInfo/midColumn/fullScreen", false);
 			// No item should be selected on master after detail page is closed
 			this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			
+			/* refresh master list binding */
+			let oList = this.getOwnerComponent().oListSelector._oList;
+			if(oList){
+				oList.getBinding("items").refresh(true);
+				oList.getModel().refresh(true);
+			}
+
 			this.getRouter().navTo("master");
 			this.soaState.clearSelectedOpportunity();
 			this.soaState.setEditMode(false);
