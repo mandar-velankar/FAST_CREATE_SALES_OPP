@@ -382,7 +382,7 @@ sap.ui.define([
 		//Go to sharepoint folder
 		_onFolderButtonPress: function (oEvent) {
 			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
-			let url = "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$OpportunityId";
+			let url = "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/SalesOpportunity/$CountryCode/$OpportunityId";
 			url = url.replace("$CountryCode", oSelectedOpportunity.countryCode);
 			url = url.replace("$OpportunityId", oSelectedOpportunity.iD);
 			window.open(url);
