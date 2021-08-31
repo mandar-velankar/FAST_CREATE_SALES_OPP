@@ -43,6 +43,19 @@ sap.ui.define([
 			return this.odata("/PublicSalesOpportunities").get(mParameters);
 		},
 
+		/**
+		 * Get a list of countries for current user
+		 */
+		 getCountries: function () {
+			
+			let sPath = "/TenderCountriesUser";
+
+			var mParameters = {
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
 		saveOpportunity: function (opportunity) {
 
 			const data = opportunity.getAll();
@@ -63,6 +76,80 @@ sap.ui.define([
 
 			return this.odata(sKey).get();
 		},
+
+		getCountryBrands: function (sCountryCode) {
+            let sPath = "/CountryBrands";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+
+				var oCountryCodeFilter = new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode
+				});
+
+				aFilters.push(oCountryCodeFilter);
+			}
+
+            
+			var mParameters = {
+				filters: aFilters
+				
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },
+
+		/*getCountryBrandProducts: function (sCountryCode, sBrandId) {
+            let sPath = "/CountryBrandProducts";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+				aFilters.push(new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode}));
+			}
+
+			if (sBrandId){
+				aFilters.push(new Filter({
+					path: 'BRAND_ID',
+					operator: FilterOperator.EQ,
+					value1: sBrandId}));
+			}
+
+            
+			var mParameters = {
+				filters: aFilters
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },*/
+
+		getCountryBrandProducts: function (sCountryCode) {
+            let sPath = "/CountryBrandProducts";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+				aFilters.push(new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode}));
+			}
+            
+			var mParameters = {
+				filters: aFilters
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },
 
 		loadCountryChannels: function (sCountry) {
 			const sCountryChannelsPath = "/CountryChannels";
@@ -121,9 +208,11 @@ sap.ui.define([
 			const sInstitutesPath = "/PT_TMINST";
 			var aFilters = [];
 
-			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry),
-				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, sInstituteType)
-			);
+			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry));
+
+			if(sInstituteType){
+				aFilters.push(new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, sInstituteType));
+			}
 
 			var mParameters = {
 				filters: aFilters

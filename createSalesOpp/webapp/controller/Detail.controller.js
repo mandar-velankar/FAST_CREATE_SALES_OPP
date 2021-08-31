@@ -7,7 +7,10 @@ sap.ui.define([
 	"sap/m/library",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator) {
+	"sap/m/MessageToast",
+	"sap/m/Token",
+	"sap/m/Tokenizer",
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary, Filter, FilterOperator, MessageToast, Token, Tokenizer) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -183,9 +186,18 @@ sap.ui.define([
 			this.getModel("appView").setProperty("/actionButtonsInfo/midColumn/fullScreen", false);
 			// No item should be selected on master after detail page is closed
 			this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			
+			/* refresh master list binding */
+			let oList = this.getOwnerComponent().oListSelector._oList;
+			if(oList){
+				oList.getBinding("items").refresh(true);
+				oList.getModel().refresh(true);
+			}
+
 			this.getRouter().navTo("master");
 			this.soaState.clearSelectedOpportunity();
 			this.soaState.setEditMode(false);
+			this.soaState.setCreationMode(false);
 		},
 
 		/**
@@ -205,84 +217,17 @@ sap.ui.define([
 		},
 
 		onParticipateOpportunityPress: async function (oEvent) {
-			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
-			if (oSelectedOpportunity.mainStatus === "Participated") {
-				this.openTender(oSelectedOpportunity.tenderID);
-				return true;
-			}
-
-			await this.soaState.setTemporaryTender('CL');
-			this._getParticipationDialog().open();
-		},
-
-		openTender:function(tenderId){
-			window.open("/app/#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-		},
-		/**
-		 * New contracting dialog
-		 * @returns {dialog} - oDialog
-		 */
-		_getParticipationDialog: function () {
-			//create new dialog if not yet existing
-			if (!this._oParticipationDialog) {
-
-				let oView = this.getView();
-				let that = this;
-
-				//get dialog
-				/*this._oParticipationDialog = sap.ui.core.Fragment.load({
-					id: oView.getId(),
-					name: "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo",
-					controller: this
-				}).then(function (oParticipationDialog) {
-					oView.addDependent(that._oParticipationDialog);
-					return oParticipationDialog;
-				});*/
-				this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo", this);
-				this.getView().addDependent(this._oParticipationDialog);
-			}
-
-			return this._oParticipationDialog;
-		},
-
-		onCancelParticipation: function (oEvent) {
-			this._oParticipationDialog.close();
+			this.soaState.onParticipateOpportunity();
+			let oParticipationDialog = await this.soaState.getParticipationDialog(this.getView());
+			oParticipationDialog.open();
 		},
 
 		onSaveParticipation: async function () {
+			this.soaState.onSaveParticipation();
+		},
 
-			const oTender = this.soaState.getNewTender();
-			var that = this;
-
-			if (this._validateNewTender(oTender)) {
-				try {
-					BusyIndicator.show(0);
-					await this.soaState.createTender(oTender);
-					BusyIndicator.hide()
-					this._oParticipationDialog.close();
-					this.getModel().refresh();
-
-					let opp = that.soaState.getSelectedOpportunity();
-					opp.mainStatus = "Participated";
-					that.soaState.setSelectedOpportunity(opp);
-					sap.m.MessageToast.show("Tender creation done...");
-					//successfully created tender
-					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
-						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
-							if (sAction !== MessageBox.Action.CLOSE) {
-								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-								window.open("/app/#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-							}
-						}
-					});
-
-				} catch (error) {
-					console.error(error);
-					BusyIndicator.hide()
-				}
-			}
+		onCancelParticipation: function (oEvent) {
+			this.soaState.onCancelParticipation();
 		},
 
 		_validateNewOpportunity: function (oOpportunity) {
@@ -389,129 +334,6 @@ sap.ui.define([
 			return bValid;
 		},
 
-		_validateNewTender: function (oTender) {
-
-			//TODO: move to state
-
-			var bValid = true;
-			var bWarning = false;
-			var aMessages = [];
-
-			//check mandatory fields
-			if (
-				oTender.tenderName === "" ||
-				oTender.classification === "" ||
-				oTender.instituteID === "" || //IntituteType is property of institute
-				oTender.tenderChannel === "" ||
-				oTender.groupPurchasing === "" ||
-				!oTender.publicationDate ||
-				!oTender.bidDueDate) {
-
-				//add error message
-				var oMessage = {
-					type: 'Error',
-					title: 'Mandatory fields.',
-					description: '- Tender Name \n' +
-						'- Classification \n' +
-						'- Institute \n' +
-						'- Channel \n' +
-						'- Group Purchasing \n' +
-						'- Publication Date \n' +
-						'- Offer due Date \n',
-					subtitle: 'Please enter all the mandatory fields..',
-					counter: 1
-				}
-				aMessages.push(oMessage);
-
-				bValid = false;
-
-			}
-
-			//check if dates are correct
-			if (!moment(oTender.publicationDate).isBefore(oTender.bidDueDate)) {
-
-				//add error message
-				var oMessage = {
-					type: 'Error',
-					title: 'Publication Date',
-					description: 'Publication date should be before the offer due date. \n',
-					subtitle: 'Publication date should be before the offer due date.',
-					counter: 1
-				}
-				aMessages.push(oMessage);
-
-				bValid = false;
-			}
-
-			//check if dates are correct
-			if (oTender.AwardDate) { //optional date
-
-				if (!moment(oTender.bidDueDate).isBefore(oTender.awardDate)) {
-
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'OfferDuedate',
-						description: 'OfferDuedate date should be before the Award date. \n',
-						subtitle: 'OfferDuedate date should be before the Award date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-			}
-
-			//check if dates are correct
-			if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
-
-				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Award date',
-						description: 'Award date should be before the next publication date. \n',
-						subtitle: 'Award date should be before the next publication date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-
-			}
-
-			//check if dates are correct
-			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
-
-				if (!moment(oTender.internalBidDueDate).isBefore(oTender.bidDueDate)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Internal due date',
-						description: 'Internal due date should be before the offer due date. \n',
-						subtitle: 'Internal due date should be before the offer due date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-			}
-
-			//if errors (or warnings) occured, show the messages in 1 dialog
-			if (!bValid || bWarning) {
-
-				//if this check is performed for the original tender that we clone from
-				var sTitle = 'Error';
-
-				//Show error messages
-				this.soaState.showMessageCompositeView(sTitle, aMessages, 'Error');
-			}
-
-			return bValid;
-		},
-
 		/**
 		 * Go to edit mode
 		 */
@@ -542,31 +364,39 @@ sap.ui.define([
 					this.getView().setBusy(false);
 					this.getView().getModel().refresh();
 					this.soaState.setEditMode(false);
+					this.soaState.setCreationMode(false);
 					this.oObjectPageLayout.setShowFooter(false);
 					sap.m.MessageToast.show("Opportunity saved successfully...");
 
-					let oTable = this.byId("ProductsTableID");
-					if(oTable){
+					/*let oTable = this.byId("ProductsTableID");
+					if(oTable && oTable.getItems().length > 0){
 						oTable.getItems().map(item => item._oDetailControl.setProperty("icon", "sap-icon://edit")) 
 						oTable.getModel("soa").refresh();
-					}
+					}*/
 				});
 			} else {
 				this.getView().setBusy(false);
 			}
 		},
 
+		//Go to sharepoint folder
+		_onFolderButtonPress: function (oEvent) {
+			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
+			let url = "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/SalesOpportunity/$CountryCode/$OpportunityId";
+			url = url.replace("$CountryCode", oSelectedOpportunity.countryCode);
+			url = url.replace("$OpportunityId", oSelectedOpportunity.iD);
+			window.open(url);
+		},
+
 		/* handle search helps */
 		handleValueHelp: async function (oEvent) {
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
-
+			
 			var oView = this.getView();
-			let oInstituteInputField = this.byId('idInstituteName');
-			if(!oInstituteInputField){
-				oInstituteInputField = this.byId('idInstituteNameOpp');
-			}
+			let sId = oEvent.getSource().getId();
+			this._sInputId = sId.substring(sId.lastIndexOf('-') + 1);
+			let oOpportunity = this.soaState.getSelectedOpportunity();
 
-			this._sInputId = oInstituteInputField.getId();
+			await this.soaState.loadCountryInstitutes(oOpportunity.countryCode, this.byId('idInstituteType').getSelectedKey());
 
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -606,7 +436,7 @@ sap.ui.define([
 					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
 					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
 					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
-					oOpportunity.institute_CountryCode = 'CL';
+					oOpportunity.institute_CountryCode = oOpportunity.countryCode;
 				}
 				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
@@ -686,8 +516,155 @@ sap.ui.define([
 			}
 		},
 
+		/* Everything related to the add product functionality */
+		clearSelectedProductInputList: function () {
+
+			var oList = this.byId("idListProductsInput");
+			oList.setSelectedContextPaths();
+
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			/*var aContexts = oList.getSelectedItems();
+			if(aContexts.length > 0){
+				aContexts.map(selectedItem => selectedItem.setProperty("selected", false));
+			}
+			this.soaState.updateModel();*/
+
+		},
+
 		onAddProduct: function(oEvent){
-			this.soaState.addProduct();
+			//this.soaState.addProduct(); /* old code, to be removed, also from soaState */
+
+			// get the brand products
+			this.soaState.getBrands();
+			this.soaState.getBrandProducts();
+
+			this._getAddProductDialog().open();
+
+			/* clear the left side of the screen - selected brands & products*/
+			
+			this.clearSelectedProductInputList();
+			var oBrandList = this.byId("idBrandList");
+			var aBrandTokens = [];
+			oBrandList.setTokens(aBrandTokens);
+
+			this.soaState.setProductCollection([]);
+		},
+
+		onAddProductDialogConfirm: function(oEvent){
+			var oProductsTable = this.byId("ProductsTableID");
+			let oProductsDetail = this.byId("idProductDetailSection");
+
+			//sort again by refresh items binding
+			oProductsTable.getBinding("items").refresh(true);
+			oProductsDetail.setVisible(false);
+
+			this._getAddProductDialog().close();
+		},
+
+		_getAddProductDialog : function () { 
+
+			if (!this._oAddProductDialog) {
+			    this._oAddProductDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.createsalesopportunity.view.fragments.AddProduct", this);
+			    this.getView().addDependent(this._oAddProductDialog);
+            }
+
+            return this._oAddProductDialog;
+		},
+
+		//Select Brand: when you click on the F4 for Brands on adding a product to the offer of the tender
+		brandNameList_f4: function () { 
+
+			const that = this;
+
+			if (!this._valueHelpSelectBrandDialog) {
+				this._valueHelpSelectBrandDialog = new sap.m.SelectDialog(this.createId("idValueHelpSelectBrandDialog"), {
+					title: "Brand Name",
+					multiSelect: true,
+					rememberSelections: true,
+					items: {
+						path: "soa>/countryBrands",
+						template: new sap.m.StandardListItem({
+							title: "{soa>BRAND_NAME}",
+							description: "{soa>BRAND_ID}",
+							selected: "{soa>SELECTED}"
+						})
+					},
+					liveChange: function (oEvent) {
+						var sValue = oEvent.getParameter("value");
+						var oFilter = new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue);
+						oEvent.getSource().getBinding("items").filter([oFilter]);
+					},
+					confirm: function (oEvent) {
+						that._handleCloseBrandNameList(oEvent);
+					},
+					cancel: function (oEvent) {
+						that._handleCloseBrandNameList(oEvent);
+					}
+				});
+			}
+
+			this.getView().addDependent(this._valueHelpSelectBrandDialog);
+			this._valueHelpSelectBrandDialog.open();
+
+		},
+
+		_handleCloseBrandNameList: function (oEvent) { 
+
+			var that = this;
+
+			//selected brands
+			var aContexts = oEvent.getParameter("selectedContexts");
+			if (aContexts && aContexts.length) {
+
+				MessageToast.show("The following brands were selected: " + aContexts.map(function (oContext) {
+					return oContext.getObject().BRAND_NAME;
+				}).join(", "));
+
+				//get multi input box
+				var oBrandList = this.byId("idBrandList");
+				var aBrandTokens = [];
+				var aBrands = [];
+
+				//push the selected brands 
+				aContexts.map(function (oContext) {
+
+					var oToken = new Token({
+						text: oContext.getObject().BRAND_NAME,
+						key: oContext.getObject().BRAND_ID
+					});
+					aBrandTokens.push(oToken);
+
+					//Brands for filtering
+					var oBrand = {
+						BRAND_ID: oContext.getObject().BRAND_ID
+					}
+					aBrands.push(oBrand);
+
+				});
+
+				//add the array of tokens to the multi input
+				oBrandList.setTokens(aBrandTokens);
+
+				const aFilteredBrandProducts = this.filterBrandProducts(aBrands);
+				this.soaState.setProductCollection(aFilteredBrandProducts);
+
+			} else {
+
+				MessageToast.show("No new item was selected.");
+
+			}
+		},
+
+		filterBrandProducts: function(aBrands){
+			let aBrandProducts = this.soaState.data.countryBrandProducts;
+			const aFilteredBrandProducts = aBrandProducts.filter((elem) => aBrands.find(({ BRAND_ID }) => elem.BRAND_ID === BRAND_ID));
+			const uniqueProducts = [];
+
+			aFilteredBrandProducts.forEach(x => uniqueProducts.filter(a => a.PRODUCT_ID === x.PRODUCT_ID).length > 0 ? null : uniqueProducts.push(x));
+
+			return uniqueProducts;
 		},
 
 		onDeleteProduct: function (oEvent) {
@@ -710,6 +687,44 @@ sap.ui.define([
 
 
         },
+
+		onPressAddProductToOutputList: function(){ 
+			const oSourceTable = this.byId("idListProductsInput");
+			const oSelectedItems = oSourceTable.getSelectedItems();
+			const oSelectedProducts = oSelectedItems.map(item => item.getBindingContext("soa").getObject());
+
+			oSelectedProducts.map(this.addSelectedProductToTarget.bind(this));
+
+		},
+
+		//TODO async & await not supported in all browsers (IE not supported), (we could use the transpiler in the yaml file (compared to tender app))
+		addSelectedProductToTarget: async function(product) { 
+			const productPackId = product.PRODUCT_ID;
+
+			const bProductIsAlreadyAddedToTheTargetTable = this.soaState.getSelectedOpportunity().getProductByProductPackId(productPackId);
+
+			if(!bProductIsAlreadyAddedToTheTargetTable){
+				this.soaState.addProduct(product);
+				this.soaState.updateModel();
+			}else {
+				sap.m.MessageBox.show(`Product(${product.PRODUCT_NAME}) is already added.`, {
+					title: "Error",
+					icon: sap.m.MessageBox.Icon.ERROR
+				});
+			}
+		},
+
+		onPressRemoveProductFromOutputList:function(){
+			const oTargetTable = this.byId("idListProductsOutput");
+			const oSelectedItem = oTargetTable.getSelectedItem();
+			const oSelectedProduct = oSelectedItem.getBindingContext("soa").getObject();
+			let oSelectedProducts = this.soaState.getSelectedOpportunity().products;
+
+			if(oSelectedProducts && oSelectedProducts.length > 0){
+				this.soaState.deleteProduct(oSelectedProducts.findIndex( product => product.productPackId = oSelectedProduct.productPackId));
+			}
+
+		},
 
 	});
 

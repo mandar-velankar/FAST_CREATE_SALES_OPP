@@ -49,7 +49,11 @@ sap.ui.define([
         },
 
         getTenderReference:function(){
-            return this.tenderReference;
+            return this.iD; //using the ID as a reference to our sales opportunity in the tender application
+        },
+
+        getCountryCode:function(){
+            return this.countryCode; //using the ID as a reference to our sales opportunity in the tender application
         },
 
         setProducts: function (products) {
@@ -62,6 +66,14 @@ sap.ui.define([
             return this.products || [];
         },
 
+        getProductByProductPackId: function (productPackId) {
+            return this.getProducts().find(product => product.productPackId === productPackId);
+        },
+
+        setTenderMatchingStatus: function (status) {
+            if (status) this.tenderMatchingStatus = status;
+        },
+
         //<property>Changed function
         // countryCodeChanged: function (state, event) {
         //     //do something when countryCode changes in the view/ui
@@ -71,6 +83,7 @@ sap.ui.define([
         getJSON: function () {
             return this.getJSONObject([
                 "iD",
+                "countryCode",
                 "tenderReference",
                 "classification",
                 "tenderChannel",
@@ -82,7 +95,8 @@ sap.ui.define([
                 "extensionPeriod",
                 "tenderMatchingStatus",
                 "institute_InstituteID",
-                "institute_CountryCode"
+                "institute_CountryCode",
+                "description"
             ]);
         },
 
@@ -94,7 +108,7 @@ sap.ui.define([
             return {
                 Institute: this.getInstituteName(),
                 TenderReference: this.getTenderReference(),
-                CountryCode:"CL",
+                CountryCode:this.getCountryCode(),
                 ClosingDate: this.getClosingDate(),
                 ...this.getJSONObject(["publicationDate"])
             };

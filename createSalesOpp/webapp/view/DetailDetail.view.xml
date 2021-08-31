@@ -3,7 +3,8 @@
 	xmlns="sap.f"
 	xmlns:m="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:form="sap.ui.layout.form">
+	xmlns:form="sap.ui.layout.form"
+	xmlns:layout="sap.ui.layout">
 	<DynamicPage id="idDynamicPage" toggleHeaderOnTitleClick="false">
 		<title>
 			<DynamicPageTitle>
@@ -40,13 +41,31 @@
 				</navigationActions>
 			</DynamicPageTitle>
 		</title>
+
+		<header>
+				<DynamicPageHeader pinnable="true">
+					<layout:HorizontalLayout allowWrapping="true">
+						<layout:VerticalLayout class="sapUiMediumMarginEnd">
+							<m:ObjectAttribute title="Brand" text="{soa>/selectedProduct/brandName}"/>
+						</layout:VerticalLayout>
+					</layout:HorizontalLayout>
+					<layout:HorizontalLayout allowWrapping="true">
+						<layout:VerticalLayout class="sapUiMediumMarginEnd">
+							<m:ObjectAttribute title="Product" text="{soa>/selectedProduct/productPackName}"/>
+						</layout:VerticalLayout>
+					</layout:HorizontalLayout>
+				</DynamicPageHeader>
+		</header>
+
 		<content>
 			<m:VBox width="100%">
 				<form:SimpleForm  editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
 					class="editableForm" visible="true">
 					<form:content>
-						<m:Label text="Brand" />
-						<m:Text text="{soa>/selectedProduct/brandID}"/>
+						<m:Label text="Recommended Price" />
+						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
+						<m:Label text="Requested Quantity" />
+						<m:Input value="{soa>/selectedProduct/requestedQuantity}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
 						<m:Label text="Comment" />
 						<m:TextArea value="{soa>/selectedProduct/comment}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 					</form:content>
