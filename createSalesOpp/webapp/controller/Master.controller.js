@@ -90,6 +90,7 @@ sap.ui.define([
 				this.soaState.loadCountryChannels(sCountryCode);
 				this.soaState.loadCountryClassifications(sCountryCode);
 				this.soaState.loadCountryTenderTypes(sCountryCode);
+				this.soaState.loadCountryCurrencies(sCountryCode);
 			})
 			.catch((error) => { });
 
@@ -490,6 +491,7 @@ sap.ui.define([
 			//Binding to table with the filters and the sorters
 			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 
+			this.soaState.loadCountryCurrencies(oCountry);
 
 		},
 

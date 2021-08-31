@@ -150,6 +150,13 @@
 									</m:items>
 								</m:Select>
 
+								<m:Label text="{i18n>currency}" design="Bold" required="true"/>
+								<m:Select id="idCurrency" selectedKey="{soa>/selectedOpportunity/currency}"
+										  items="{ path: 'soa>/CountryCurrencies', sorter: { path: 'SORTER' } }"
+										  enabled="{= ${soa>/editMode} }">
+									<core:Item key="{soa>CURRENCY}" text="{soa>CURRENCY}"/>
+								</m:Select>
+
 								<core:Title text="Timeline"/>
 								<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
 								<m:DatePicker enabled="{= ${soa>/editMode} }" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
