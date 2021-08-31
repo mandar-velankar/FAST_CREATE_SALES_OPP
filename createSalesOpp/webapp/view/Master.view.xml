@@ -20,13 +20,16 @@
 		<f:content>
 			<VBox fitContainer="true">
 			<OverflowToolbar class="sapFDynamicPageAlignContent">
+
 					<!-- Filter for Country -->
+					<Label text="Country:" />
 					<Select id="idSlctCountry" forceSelection="true" items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
 							change=".setFilter">
 							<core:Item key="{soa>countryCode}" text="{soa>countryName}"/>
 					</Select>
 
 					<!-- Filter for Status -->
+					<Label text="Status:" />
 					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
 							<core:Item key="" text=""/>
 							<core:Item key="In" text="In"/>
@@ -35,6 +38,7 @@
 					</Select>
 
 					<!-- Filter for Substatus -->
+					<Label text="Sub Status:" />
 					 <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
