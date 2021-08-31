@@ -117,7 +117,7 @@
 								<ObjectIdentifier title="{i18n>offrdudte}" />
 							</header>
 						</Column>
-						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+						<!-- <Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="{i18n>nwpubdate}" />
 							</header>
@@ -131,7 +131,7 @@
 							<header>
 								<ObjectIdentifier title="{i18n>contractExtension}" />
 							</header>
-						</Column>
+						</Column> -->
 						<Column width="5%" minScreenWidth="920px" demandPopin="false" popinDisplay="Inline" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<header>
 								<Label text=""/>
@@ -163,7 +163,7 @@
 										}
 									}" 
 								/>
-								<Text text="{
+								<!-- <Text text="{
 										path: 'NextPublicationDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
@@ -172,7 +172,7 @@
 									}" 
 								/>
 								<Text text="{ContractLength}"/>
-								<Text text="{ExtensionPeriod}"/>
+								<Text text="{ExtensionPeriod}"/> -->
 								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
