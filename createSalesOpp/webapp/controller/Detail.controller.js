@@ -258,8 +258,8 @@ sap.ui.define([
 						'- Institute \n' +
 						'- Channel \n' +
 						'- Publication Date \n' +
-						'- Offer due Date \n',
-						'- Currency \n'
+						'- Offer due Date \n'+
+						'- Currency \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
