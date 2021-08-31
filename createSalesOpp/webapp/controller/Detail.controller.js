@@ -244,6 +244,7 @@ sap.ui.define([
 				oOpportunity.classification === "" ||
 				oOpportunity.institute_InstituteID === 0 ||
 				oOpportunity.tenderChannel === "" ||
+				oOpportunity.currency === "" ||
 				!oOpportunity.publicationDate ||
 				!oOpportunity.offerDueDate
 				) {
