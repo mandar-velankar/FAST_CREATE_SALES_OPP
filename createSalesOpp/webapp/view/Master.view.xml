@@ -22,15 +22,16 @@
 			<OverflowToolbar class="sapFDynamicPageAlignContent">
 
 					<!-- Filter for Country -->
-					<Label text="Country:" />
+					<Label text="Country:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<Select id="idSlctCountry" forceSelection="true" items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
-							change=".setFilter">
+							change=".setFilter"
+							visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="{soa>countryCode}" text="{soa>countryName}"/>
 					</Select>
 
 					<!-- Filter for Status -->
-					<Label text="Status:" />
-					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
+					<Label text="Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
 							<core:Item key="In" text="In"/>
 							<core:Item key="Out" text="Out"/>
@@ -38,8 +39,8 @@
 					</Select>
 
 					<!-- Filter for Substatus -->
-					<Label text="Sub Status:" />
-					 <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
+					<Label text="Sub Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					 <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
@@ -49,10 +50,10 @@
 					</Select>
 					<ToolbarSpacer/>
 					
-					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
+					<SearchField id="idSearch" search=".setFilter" width="17.5rem" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<!-- Button for adding a new tender -->
-					<Button icon="sap-icon://add" text="Create New" press=".onAdd"/>
-					<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings"/>
+					<Button icon="sap-icon://add" text="Create New" press=".onAdd" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 				</OverflowToolbar>
 				<Table
 						id="list"
