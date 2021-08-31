@@ -82,9 +82,18 @@ sap.ui.define([
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 
-			this.soaState.loadCountryChannels("CL");
-			this.soaState.loadCountryClassifications("CL");
-			this.soaState.loadCountryTenderTypes("CL");
+			this.getCountries().then(() => {
+				this.byId("idSlctCountry").setSelectedKey(this.soaState.data.countries[0].CountryCode)
+				this.setFilter();
+				let sCountryCode = this.byId("idSlctCountry").getSelectedItem().getKey();
+
+				this.soaState.loadCountryChannels(sCountryCode);
+				this.soaState.loadCountryClassifications(sCountryCode);
+				this.soaState.loadCountryTenderTypes(sCountryCode);
+			})
+			.catch((error) => { });
+
+
 			
 		},
 
@@ -303,10 +312,10 @@ sap.ui.define([
 		_onMasterMatched: function () {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
-
-			// get Opportunities 
-			// const date = new Date('2019-10-15T12:50:51Z').toJSON();
-			// this.soaState.getOpportunities(date);
+			/*this.getCountries().then(() => {
+				this.setFilter();
+			})
+			.catch((error) => { });*/
 		},
 
 		/**
@@ -331,13 +340,21 @@ sap.ui.define([
 			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
 			let sId = this.soaState.getNewUUID();
-			let oOpportunity = this.soaState.createNewOpportunityObject(sId);
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
+			if(sCountryCode === ""){
+				//user should select a country first from the filter. Show error message.
+				sap.m.MessageBox.error(`Please select a country first, for which you would like to create a new opportunity.`, {
+					title: "Country missing"
+				});
+			} else {
+				this.soaState.createNewOpportunityObject(sId, sCountryCode);
+				this.soaState.setCreationMode(true);
 
-			this.getRouter().navTo("object", {
-				objectId: sId,
-				layout: "TwoColumnsMidExpanded"
-			}, bReplace);
-
+				this.getRouter().navTo("object", {
+					objectId: sId,
+					layout: "TwoColumnsMidExpanded"
+				}, bReplace);
+			}
 		},
 
 		/**
@@ -396,216 +413,28 @@ sap.ui.define([
 			return this.soaState.createOpportunity(selectedObj);
 
 		},
-		onOpenTender:function(event){
 
-		},
 		/* handling participate button press */
-		onParticipateOpportunityPress: async function (event) {
-			/* get the selected line in the table and set it as current opportunity */
-			// let sPath = event.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
-			const selectedObj = event.getSource().getBindingContext().getObject()//shorter using public functions
-
-			const selectedItemStatus = event.getSource().getBindingContext().getProperty("MainStatus");
-			if (selectedItemStatus === "Participated") {
-				this.openTender(selectedObj.TenderID);
-				return true;
-			}
-			
-			const opportunity = this.createStateObject(selectedObj);
-			this.soaState.setSelectedOpportunity(opportunity);
-
-			await this.soaState.setTemporaryTender('CL');
-			this._getParticipationDialog().open();
-		},
-
-		/**
-		 * New contracting dialog
-		 * @returns {dialog} - oDialog
-		 */
-		_getParticipationDialog: function () {
-
-			//create new dialog if not yet existing
-			if (!this._oParticipationDialog) {
-
-				//get dialog
-				this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo", this);
-				this.getView().addDependent(this._oParticipationDialog);
-
-			}
-
-			return this._oParticipationDialog;
+		onParticipateOpportunityPress: async function (oEvent) {
+			this._oView = this.getView();
+			this.soaState.onParticipateOpportunity(oEvent.getSource().getBindingContext(), this.getView());
+			let oParticipationDialog = await this.soaState.getParticipationDialog(this.getView());
+			oParticipationDialog.open();
 		},
 
 		onCancelParticipation: function (oEvent) {
-			this._oParticipationDialog.close();
+			this.soaState.onCancelParticipation();
 			this.soaState.clearSelectedOpportunity();
 		},
 
-		onSaveParticipation: async function () {
-
-			const oTender = this.soaState.getNewTender();
-			if (this._validateNewTender(oTender)) {
-				try {
-					BusyIndicator.show(0);
-					await this.soaState.createTender(oTender);
-					BusyIndicator.hide()
-					let opp = this.soaState.getSelectedOpportunity();
-					opp.mainStatus = "Participated";
-					this.getModel().refresh();
-
-					this.soaState.clearSelectedOpportunity();
-					this._oParticipationDialog.close();
-					//successfully created tender
-					sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-						actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
-						styleClass: "sapUiSizeCompact",
-						onClose: (sAction)=>{
-							if (sAction === "CLOSE") {
-								this.byId('list').getBinding('items').refresh()
-								sap.m.MessageToast.show("Tender creation done...");
-							} else {
-								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-								this.openTender(oTender.tenderID);
-							}
-						}
-					});
-				} catch (error) {
-					BusyIndicator.hide()
-				}
-			}
-		},
-		openTender:function(tenderId){
-			window.open("/app/#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-		},
-
-		_validateNewTender: function (oTender) {
-
-			//TODO: move to state
-
-			var bValid = true;
-			var bWarning = false;
-			var aMessages = [];
-
-			//check mandatory fields
-			if (
-				oTender.tenderName === "" ||
-				oTender.classification === "" ||
-				oTender.instituteID === "" || //IntituteType is property of institute
-				oTender.tenderChannel === "" ||
-				oTender.groupPurchasing === "" ||
-				!oTender.publicationDate ||
-				!oTender.bidDueDate) {
-
-				//add error message
-				var oMessage = {
-					type: 'Error',
-					title: 'Mandatory fields.',
-					description: '- Tender Name \n' +
-						'- Classification \n' +
-						'- Institute \n' +
-						'- Channel \n' +
-						'- Group Purchasing \n' +
-						'- Publication Date \n' +
-						'- Offer due Date \n',
-					subtitle: 'Please enter all the mandatory fields..',
-					counter: 1
-				}
-				aMessages.push(oMessage);
-
-				bValid = false;
-
-			}
-
-			//check if dates are correct
-			if (!moment(oTender.publicationDate).isBefore(oTender.bidDueDate)) {
-
-				//add error message
-				var oMessage = {
-					type: 'Error',
-					title: 'Publication Date',
-					description: 'Publication date should be before the offer due date. \n',
-					subtitle: 'Publication date should be before the offer due date.',
-					counter: 1
-				}
-				aMessages.push(oMessage);
-
-				bValid = false;
-			}
-
-			//check if dates are correct
-			if (oTender.AwardDate) { //optional date
-
-				if (!moment(oTender.bidDueDate).isBefore(oTender.awardDate)) {
-
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'OfferDuedate',
-						description: 'OfferDuedate date should be before the Award date. \n',
-						subtitle: 'OfferDuedate date should be before the Award date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-			}
-
-			//check if dates are correct
-			if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
-
-				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Award date',
-						description: 'Award date should be before the next publication date. \n',
-						subtitle: 'Award date should be before the next publication date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-
-			}
-
-			//check if dates are correct
-			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
-
-				if (!moment(oTender.internalBidDueDate).isBefore(oTender.bidDueDate)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Internal due date',
-						description: 'Internal due date should be before the offer due date. \n',
-						subtitle: 'Internal due date should be before the offer due date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-			}
-
-			//if errors (or warnings) occured, show the messages in 1 dialog
-			if (!bValid || bWarning) {
-
-				//if this check is performed for the original tender that we clone from
-				var sTitle = 'Error';
-
-				//Show error messages
-				this.soaState.showMessageCompositeView(sTitle, aMessages, 'Error');
-			}
-
-			return bValid;
-		},
+		/*onSaveParticipation: async function () {
+			await this.soaState.onSaveParticipation(this._oView);
+		},*/
 
 		/* Filtering & sorting functionalities */
 		setFilter: function (oSelection) {
 
-			//var oFastAppData = Services.getFastAppDataModel();
-
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			var sSearch = this.byId("idSearch").getProperty("value");
 			var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
 			var sSubStatus = this.byId("idSlctSubStatusFilter").getSelectedKey();
@@ -614,6 +443,9 @@ sap.ui.define([
 			var orFilters = [];
 			var andFilters = [];
 
+			if (oCountry != ""){
+				andFilters.push(new sap.ui.model.Filter("CountryCode", "EQ", oCountry));
+			}
 			if (sStatus) {
 				andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
 			}
@@ -661,9 +493,31 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * Get list of countries 
+		 */
+		 getCountries: function(){
+			this.getView().setBusy(true);
+
+			return this.soaState.getCountries()
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getView().setBusy(true);
+				this.showNoAccessMessage("User ID doesn't have access");
+				throw(error);
+			});
+		},
+
 		/* handle search helps */
 		handleValueHelp: async function (oEvent) {
-			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstTypeTender').getSelectedKey());
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
+			await this.soaState.loadCountryInstitutes(sCountryCode, this.byId('idInstTypeTender').getSelectedKey());
 
 			var oView = this.getView();
 			this._sInputId = this.byId('idInstituteName').getId();
@@ -696,6 +550,7 @@ sap.ui.define([
 		},
 
 		_handleValueHelpClose: function (oEvent) {
+			let sCountryCode = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "CL";
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
 				var oInputfield = this.byId(this._sInputId);
@@ -706,7 +561,7 @@ sap.ui.define([
 					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
 					oOpportunity.institute.instituteName = oSelectedItem.getTitle();
 					oOpportunity.institute_InstituteID = Number(oSelectedItem.getDescription());
-					oOpportunity.institute_CountryCode = 'CL';
+					oOpportunity.institute_CountryCode = sCountryCode;
 				}
 				else if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();

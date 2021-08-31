@@ -4,9 +4,12 @@ sap.ui.define([
 	"../model/Tender",
 	"../model/Institute",
 	"../model/Product",
+	"../model/Country",
 	"../libs/momentjs/moment.min",
 	"sap/ui/model/json/JSONModel",
-], function (BaseState, Opportunity, Tender, Institute, Product, MomentJS, JSONModel) {
+	"sap/ui/core/BusyIndicator",
+	"sap/m/MessageBox",
+], function (BaseState, Opportunity, Tender, Institute, Product, Country, MomentJS, JSONModel, BusyIndicator, MessageBox) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.createsalesopportunity.state.SoaState", {
@@ -18,7 +21,8 @@ sap.ui.define([
 				opportunities: [],
 				selectedOpportunity: {},
 				selectedProduct: {},
-				editMode: false
+				editMode: false,
+				creationMode: false,
 				//pricing: new Pricing()
 			};
 			// , true, (changes) => {
@@ -46,8 +50,20 @@ sap.ui.define([
 			return this.getProperty("editMode");
 		},
 
+		setCreationMode: function(sCreationMode){
+			this.setProperty("creationMode", sCreationMode);
+		},
+
+		getCreationMode: function(){
+			return this.getProperty("creationMode");
+		},
+
 		restoreBackup:function(){
 			this.backupOpportunity && this.setSelectedOpportunity(this.createOpportunity(this.backupOpportunity));
+		},
+		setTenderMatchingStatus:function(status){
+			this.getSelectedOpportunity().setTenderMatchingStatus(status);
+			this.updateModel();
 		},
 
 
@@ -124,7 +140,10 @@ sap.ui.define([
 		},
 
 		getProductFromSelectedOpportunityByProductId: function(productId){
-			return this.getSelectedOpportunity().getProducts().find(prod => prod.iD == productId);
+			let oProducts = this.getSelectedOpportunity().getProducts();
+			if(oProducts && oProducts.length > 0){
+				return this.getSelectedOpportunity().getProducts().find(prod => prod.iD == productId);
+			}
 		},
 
 		/**
@@ -162,6 +181,50 @@ sap.ui.define([
 			);
 		},
 
+		/**
+		 * get list of country for current user
+		 */
+		 getCountries: function (){
+								
+			this.setProperty("countries", []);
+			const ctrPromise = this.getService().getCountries().then(countries => {
+				countries = countries.data.results;
+				if(countries.length > 0){
+					return countries.map(country => {
+						return new Country(country);
+					});
+				} else {
+					throw 'User not allowed';
+				}
+			});
+			return Promise.all([ctrPromise]).then((values) => {
+				const [countries] = values;
+				this.setProperty("countries", [...countries]);
+				return this.getProperty("countries");
+			});		
+
+		},
+
+		/* everything related to countrybrands & products */
+		getBrands: async function () {
+			let sCountryCode = this.getSelectedOpportunity().countryCode;
+
+			const aCountryBrands = await this.getService().getCountryBrands(sCountryCode);
+			this.setProperty("countryBrands", aCountryBrands.data.results);
+        },
+
+		getBrandProducts: async function (){
+			let sCountryCode = this.getSelectedOpportunity().countryCode;
+
+			const aCountryBrandProducts = await this.getService().getCountryBrandProducts(sCountryCode);
+			this.setProperty("countryBrandProducts", aCountryBrandProducts.data.results);
+		},
+
+		setProductCollection: function (products) {
+			this.setProperty("productCollection", products);
+			this.updateModel();
+		},
+
 		//sorting an array of objects
 		sortByKeyAsc: function (array, key) {
 			if (array) {
@@ -174,10 +237,242 @@ sap.ui.define([
 
 		},
 
-		createNewOpportunityObject: async function(sObjectId){ 
+		onParticipateOpportunity: async function(oSelectedObjectContext, oView){
+			if(oSelectedObjectContext){
+				var oSelectedOpportunity = oSelectedObjectContext.getObject();
+				var sCountryCode = oSelectedObjectContext.getProperty("CountryCode");
+				var sTenderId = oSelectedObjectContext.getProperty("TenderID");
+
+				const opportunity = this.createStateObject(oSelectedOpportunity, oView);
+				this.setSelectedOpportunity(opportunity);
+			} else {
+				var oSelectedOpportunity = this.getSelectedOpportunity();
+				var sCountryCode = oSelectedOpportunity.countryCode;
+				var sTenderId = oSelectedOpportunity.tenderID;
+			}
+			
+			
+			await this.loadCountryInstitutes(sCountryCode);
+			if (oSelectedOpportunity.mainStatus === "Participated" || (oSelectedObjectContext && oSelectedObjectContext.getProperty("MainStatus") === "Participated")) {
+				this.openTender(sTenderId);
+				return true;
+			}
+
+			await this.setTemporaryTender(sCountryCode);
+		},
+
+		openTender:function(tenderId){
+			window.open("/app/#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		},
+
+		createStateObject: function (selectedObj, oView) {
+
+			// expand Comprador and Items
+			selectedObj["Institute"] = selectedObj.Institute && oView.getModel().getObject(`/${selectedObj.Institute.__ref}`);
+			selectedObj["Products"]["results"] = selectedObj.Products && selectedObj.Products.__list.map(path => oView.getModel().getObject(`/${path}`));
+
+			return this.createOpportunity(selectedObj);
+
+		},
+
+		getParticipationDialog: function (oView) {
+			//create new dialog if not yet existing
+			if (!this._oParticipationDialog) {
+
+				//get dialog
+				/*this._oParticipationDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo",
+					controller: this
+				}).then(function (oParticipationDialog) {
+					oView.addDependent(that._oParticipationDialog);
+					return oParticipationDialog;
+				});*/
+				this._oParticipationDialog = sap.ui.xmlfragment(oView.getId(), "com.bayer.tender.createsalesopportunity.view.fragments.OpportunityInfo", this);
+				oView.addDependent(this._oParticipationDialog);
+			}
+
+			return this._oParticipationDialog;
+		},
+
+		onCancelParticipation: function () {
+			this._oParticipationDialog.close();
+		},
+
+		onSaveParticipation: async function (oEvent) {
+
+			const oTender = this.getNewTender();
+			let oView = oEvent ? oEvent.oSource : undefined;
+
+			if (this._validateNewTender(oTender)) {
+				try {
+					BusyIndicator.show(0);
+					await this.createTender(oTender);
+					BusyIndicator.hide()
+					this._oParticipationDialog.close();
+
+					let opp = this.getSelectedOpportunity();
+					opp.mainStatus = "Participated";
+					this.setSelectedOpportunity(opp);
+					this.getModel().refresh();
+
+					/* refresh master list binding */
+					let oParent = oView ? oView.getParent() : undefined;
+						oParent = oParent ? oParent.getParent() : undefined;
+					let oList = oParent ? oParent.byId('list') : undefined; //get list from master screen
+					if(oList){
+						oList.getBinding("items").refresh(true);
+						oList.getModel().refresh(true);
+					}
+
+					sap.m.MessageToast.show("Tender creation done...");
+					//successfully created tender
+					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction !== MessageBox.Action.CLOSE) {
+								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app/#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+							}
+						}
+					});
+
+				} catch (error) {
+					console.error(error);
+					BusyIndicator.hide()
+				}
+			}
+		},
+
+		_validateNewTender: function (oTender) {
+
+			//TODO: move to state
+
+			var bValid = true;
+			var bWarning = false;
+			var aMessages = [];
+
+			//check mandatory fields
+			if (
+				oTender.tenderName === "" ||
+				oTender.classification === "" ||
+				oTender.instituteID === "" || //IntituteType is property of institute
+				oTender.tenderChannel === "" ||
+				oTender.groupPurchasing === "" ||
+				!oTender.publicationDate ||
+				!oTender.bidDueDate) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Mandatory fields.',
+					description: '- Tender Name \n' +
+						'- Classification \n' +
+						'- Institute \n' +
+						'- Channel \n' +
+						'- Group Purchasing \n' +
+						'- Publication Date \n' +
+						'- Offer due Date \n',
+					subtitle: 'Please enter all the mandatory fields..',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+
+			}
+
+			//check if dates are correct
+			if (!moment(oTender.publicationDate).isBefore(oTender.bidDueDate)) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Publication Date',
+					description: 'Publication date should be before the offer due date. \n',
+					subtitle: 'Publication date should be before the offer due date.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+			}
+
+			//check if dates are correct
+			if (oTender.AwardDate) { //optional date
+
+				if (!moment(oTender.bidDueDate).isBefore(oTender.awardDate)) {
+
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'OfferDuedate',
+						description: 'OfferDuedate date should be before the Award date. \n',
+						subtitle: 'OfferDuedate date should be before the Award date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+			}
+
+			//check if dates are correct
+			if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
+
+				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Award date',
+						description: 'Award date should be before the next publication date. \n',
+						subtitle: 'Award date should be before the next publication date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+
+			}
+
+			//check if dates are correct
+			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
+
+				if (!moment(oTender.internalBidDueDate).isBefore(oTender.bidDueDate)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Internal due date',
+						description: 'Internal due date should be before the offer due date. \n',
+						subtitle: 'Internal due date should be before the offer due date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+			}
+
+			//if errors (or warnings) occured, show the messages in 1 dialog
+			if (!bValid || bWarning) {
+
+				//if this check is performed for the original tender that we clone from
+				var sTitle = 'Error';
+
+				//Show error messages
+				this.soaState.showMessageCompositeView(sTitle, aMessages, 'Error');
+			}
+
+			return bValid;
+		},
+
+		createNewOpportunityObject: async function(sObjectId, sCountryCode){ 
 
             const data = {
                 "ID" : sObjectId,
+				"CountryCode": sCountryCode,
 				"Classification": "Contract",
 				"TenderReference": "",
 				"TenderChannel": "Distributor",
@@ -194,10 +489,12 @@ sap.ui.define([
 					"InstituteName": ""
 				},
 				"Institute_InstituteID": 0,
-				"Institute_CountryCode": ""
+				"Institute_CountryCode": "",
+				"Description": ""
             };
 
             const oOpportunity = this.createOpportunity(data);
+			oOpportunity.setTenderMatchingStatus("Out");
 			this.setSelectedOpportunity(oOpportunity);
             return oOpportunity;
 		},
@@ -205,6 +502,11 @@ sap.ui.define([
 		createNewTenderObject: async function(sCountry){ 
 			const sTenderId = await this.getNewTenderID(sCountry);
 			const oSelectedOpportunity = this.getModel('soa').getProperty('/selectedOpportunity');
+			let   oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.InstituteID === this.data.selectedOpportunity.institute.instituteID);
+			if(!oDefaultInstitute){
+				//straight from create
+				oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.InstituteID === this.data.selectedOpportunity.instituteID);
+			}
 
             const data = {
                 //"ID" : this.create_UUID(),
@@ -214,8 +516,8 @@ sap.ui.define([
 				"Active": 1,
 				"Classification": "Contract",
 				"TenderName": "",
-				"InstituteID": "",
-				"InstituteName": "",
+				"InstituteID": oDefaultInstitute ? oDefaultInstitute.InstituteID : "",
+				"InstituteName": oDefaultInstitute ? oDefaultInstitute.InstituteName : "",
 				"TenderChannel": "Direct",
 				"InstituteType": oSelectedOpportunity.instituteType,
 				"PublicationDate": oSelectedOpportunity.publicationDate,
@@ -243,18 +545,37 @@ sap.ui.define([
 				"iD": this.getNewUUID(),
                 "brandID": "",
                 "comment": "",
+				"recommendedPrice": 0.0,
+				"requestedQuantity": 0,
                 "opportunity_ID": oOpportunity.iD,
 				"editable": true
 			}, true);
 		},
 
-		addProduct: function(){
-			let oOpportunity = this.getSelectedOpportunity();
-			if(!oOpportunity.products){
-				oOpportunity.products = {}
-			}
+		addExistingProduct: function(oOpportunity, oProduct){
+			return new Product({
+				"iD": this.getNewUUID(),
+                "brandID": oProduct.BRAND_ID,
+				"brandName": oProduct.BRAND_NAME,
+				"productPackName": oProduct.PRODUCT_NAME,
+				"productPackId": oProduct.PRODUCT_ID,
+                "comment": "",
+				"recommendedPrice": 0.0,
+				"requestedQuantity": 0,
+                "opportunity_ID": oOpportunity.iD,
+				"editable": true
+			}, true);
+		},
 
-			oOpportunity.products.push(this.createEmptyProduct(oOpportunity, true));
+		addProduct: function(oAddedProduct){
+			let oOpportunity = this.getSelectedOpportunity();
+			if(!oOpportunity.products || Object.entries(oOpportunity.products).length === 0){
+				var oProduct = this.addExistingProduct(oOpportunity, oAddedProduct)
+				oOpportunity.products = [oProduct];
+			} else {
+				oOpportunity.products.push(this.addExistingProduct(oOpportunity, oAddedProduct));
+			}
+			
 			this.updateModel();
 		},
 

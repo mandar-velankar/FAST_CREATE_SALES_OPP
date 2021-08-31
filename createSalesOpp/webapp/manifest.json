@@ -14,7 +14,7 @@
 		"resources": "resources.json",
 		"dataSources": {
 			"mainService": {
-				"uri": "/v2/salesopportunity/",
+				"uri": "/v2/createopportunity/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",

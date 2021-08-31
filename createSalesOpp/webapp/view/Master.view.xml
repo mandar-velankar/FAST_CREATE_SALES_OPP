@@ -20,6 +20,12 @@
 		<f:content>
 			<VBox fitContainer="true">
 			<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<!-- Filter for Country -->
+					<Select id="idSlctCountry" forceSelection="true" items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
+							change=".setFilter">
+							<core:Item key="{soa>countryCode}" text="{soa>countryName}"/>
+					</Select>
+
 					<!-- Filter for Status -->
 					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
 							<core:Item key="" text=""/>
@@ -33,7 +39,7 @@
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
-							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
+							<core:Item key="Quotation Submitted" text="Quotation Submitted"/>
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
 					</Select>
@@ -67,19 +73,34 @@
 						growingThreshold="15"
 						growingScrollToLoad="false">
 					<columns>
-						<Column width="10%" visible="true">
+						<Column width="6%" minScreenWidth="920px" demandPopin="false" popinDisplay="Inline" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<header>
-								<ObjectIdentifier title="{i18n>tenderref}" />
+								<ObjectIdentifier title="{i18n>countryCode}" />
 							</header>
 						</Column>
-						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
+						<Column width="10%" visible="true">
+							<header>
+								<ObjectIdentifier title="{i18n>reference}" />
+							</header>
+						</Column>
+						<Column width="19%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
 							<header>
 								<ObjectIdentifier title="{i18n>clasficn}" />
 							</header>
 						</Column>
-						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>typechnl}" />
+								<ObjectIdentifier title="{i18n>channel}" />
+							</header>
+						</Column>
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="Status" />
+							</header>
+						</Column>
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="Substatus" />
 							</header>
 						</Column>
 						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
@@ -116,9 +137,12 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">
 							<cells>
+								<Text text="{CountryCode}"/>
 								<Text text="{TenderReference}"/>
 								<Text text="{Classification}"/>
 								<Text text="{TenderChannel}"/>
+								<Text text="{MainStatus}"/>
+								<Text text="{SubStatus}"/>
 								<Text text="{
 										path: 'PublicationDate',
 										type: 'sap.ui.model.type.Date',
