@@ -63,7 +63,7 @@
 					class="editableForm" visible="true">
 					<form:content>
 						<m:Label text="Recommended Price" />
-						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
+						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }" description="{soa>/selectedOpportunity/currency}"/>
 						<m:Label text="Requested Quantity" />
 						<m:Input value="{soa>/selectedProduct/requestedQuantity}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
 						<m:Label text="Comment" />
