@@ -94,6 +94,11 @@
 						</Column>
 						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
+								<ObjectIdentifier title="{i18n>division}" />
+							</header>
+						</Column>
+						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
 								<ObjectIdentifier title="{i18n>channel}" />
 							</header>
 						</Column>
@@ -149,6 +154,7 @@
 								<Text text="{CountryCode}"/>
 								<Text text="{TenderReference}"/>
 								<Text text="{Classification}"/>
+								<Text text="{Division}"/>
 								<Text text="{TenderChannel}"/>
 								<Text text="{MainStatus}"/>
 								<Text text="{SubStatus}"/>
