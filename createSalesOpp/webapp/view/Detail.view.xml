@@ -27,7 +27,7 @@
 		enableLazyLoading="false" 
 		useIconTabBar="true" 
 		navigate=".onSectionNavigate"
-		selectedSection="basicInformationId"
+		selectedSection="opportunityInfoId"
 		showAnchorBarPopover="false">
 
 	<headerTitle>

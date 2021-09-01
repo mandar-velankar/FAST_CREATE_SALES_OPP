@@ -115,6 +115,14 @@ sap.ui.define([
 			this.sObjectId = oEvent.getParameter("arguments").objectId;
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
+
+			/* default first objectpagesection*/
+			let oDetailPage = this.getView().byId("DetailPage");
+			if(oDetailPage){
+				let oOpportunityInfoSection = this.byId("opportunityInfoId");
+				oDetailPage.setSelectedSection(oOpportunityInfoSection.getId());
+			}
+
 			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("PublicSalesOpportunities", {
 					ID: this.sObjectId
@@ -504,7 +512,7 @@ sap.ui.define([
 			}*/
 			
 			// Opportunity Info Tab
-			if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
+			/*if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
 				this.byId("editButtonId").setVisible(true);
 
 				let oNextUIState = "";
@@ -515,7 +523,7 @@ sap.ui.define([
 						objectId: this.sObjectId
 					});
 				}.bind(this));
-			}
+			}*/
 		},
 
 		/* Everything related to the add product functionality */
