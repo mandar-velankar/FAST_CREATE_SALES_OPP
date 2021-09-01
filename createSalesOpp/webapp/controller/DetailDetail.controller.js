@@ -198,7 +198,9 @@ sap.ui.define([
 		onExit: function () {
 			this.oRouter.getRoute("master").detachPatternMatched(this._onObjectMatched, this);
 			this.oRouter.getRoute("detail").detachPatternMatched(this._onObjectMatched, this);
-		}
+		},
+
+
 	});
 
 });

@@ -31,6 +31,7 @@ sap.ui.define([
                 "iD",
                 "brandID",
                 "brandName",
+                "division",
                 "productPackName",
                 "productPackId",
                 "recommendedPrice",
