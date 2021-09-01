@@ -592,7 +592,7 @@ sap.ui.define([
 				this._valueHelpSelectBrandDialog = new sap.m.SelectDialog(this.createId("idValueHelpSelectBrandDialog"), {
 					title: "Brand Name",
 					multiSelect: true,
-					rememberSelections: true,
+					rememberSelections: false,
 					items: {
 						path: "soa>/countryBrands",
 						template: new sap.m.StandardListItem({
