@@ -438,6 +438,7 @@ sap.ui.define([
 			var sSearch = this.byId("idSearch").getProperty("value");
 			var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
 			var sSubStatus = this.byId("idSlctSubStatusFilter").getSelectedKey();
+			let sDivision = this.byId("idSlctDivisionFilter").getSelectedKey();
 
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
@@ -452,6 +453,9 @@ sap.ui.define([
 
 			if (sSubStatus && sSubStatus != 'NA') {
 				andFilters.push(new sap.ui.model.Filter("SubStatus", "EQ", sSubStatus));
+			}
+			if (sDivision) {
+				andFilters.push(new sap.ui.model.Filter("Division", "EQ", sDivision));
 			}
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
 			// let sIdSource = "";
