@@ -47,6 +47,14 @@
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
 					</Select>
+					<!-- Filter for Division -->
+					<Label text="Division:" />
+					 <Select id="idSlctDivisionFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="" text=""/>
+							<core:Item key="Pharma" text="Pharma"/>
+							<core:Item key="Radiology" text="Radiology"/>
+							<core:Item key="Both" text="Both"/>
+					</Select>
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
