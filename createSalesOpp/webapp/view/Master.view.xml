@@ -32,9 +32,9 @@
 					<Label text="Status:" />
 					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
 							<core:Item key="" text=""/>
-							<core:Item key="In" text="In"/>
-							<core:Item key="Out" text="Out"/>
-							<core:Item key="Participated" text="Participated"/>
+							<core:Item key="New" text="New"/>
+							<core:Item key="Declined" text="Declined"/>
+							<core:Item key="Active" text="Active"/>
 					</Select>
 
 					<!-- Filter for Substatus -->
@@ -193,7 +193,7 @@
 								/>
 								<Text text="{ContractLength}"/>
 								<Text text="{ExtensionPeriod}"/> -->
-								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
+								<Button text="{= ${MainStatus}==='Active'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
 					</items>
