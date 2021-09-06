@@ -194,6 +194,9 @@
 									<m:Column >
 										<m:Label text="Brand" wrapping="true"/>  
 									</m:Column>
+									<m:Column >
+										<m:Label text="Division" wrapping="true"/>  
+									</m:Column>
 									<!--<m:Column >
 										<m:Label text="Code" wrapping="true"/>  
 									</m:Column>-->
@@ -229,6 +232,7 @@
 										detailPress="onProductItemSelect">
 										<m:cells>
 											<m:Text text="{soa>brandName}"/>
+											<m:Text text="{soa>division}"/>
 											<m:Text text="{soa>productPackName}"/>
 											<!--<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>
