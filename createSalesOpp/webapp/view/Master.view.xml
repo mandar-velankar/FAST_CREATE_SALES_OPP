@@ -23,7 +23,7 @@
 
 					<!-- Filter for Country -->
 					<Label text="Country:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
-					<Select id="idSlctCountry" forceSelection="true" items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
+					<Select id="idSlctCountry"  items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
 							change=".setFilter"
 							visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="{soa>countryCode}" text="{soa>countryName}"/>
@@ -31,7 +31,7 @@
 
 					<!-- Filter for Status -->
 					<Label text="Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
-					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
+					<Select id="idSlctStatusFilter"  change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
 							<core:Item key="New" text="New"/>
 							<core:Item key="Declined" text="Declined"/>
@@ -40,7 +40,7 @@
 
 					<!-- Filter for Substatus -->
 					<Label text="Sub Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
-					 <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
+					 <Select id="idSlctSubStatusFilter"  change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
@@ -50,11 +50,10 @@
 					</Select>
 					<!-- Filter for Division -->
 					<Label text="Division:" />
-					 <Select id="idSlctDivisionFilter" forceSelection="true" change=".setFilter">
-							<core:Item key="" text=""/>
+					 <Select id="idSlctDivisionFilter"  change=".setFilter">
+							<core:Item key="" text="Both"/>
 							<core:Item key="Pharma" text="Pharma"/>
 							<core:Item key="Radiology" text="Radiology"/>
-							<core:Item key="Both" text="Both"/>
 					</Select>
 					<ToolbarSpacer/>
 					
