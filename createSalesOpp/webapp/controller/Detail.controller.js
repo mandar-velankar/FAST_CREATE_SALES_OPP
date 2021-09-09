@@ -115,6 +115,14 @@ sap.ui.define([
 			this.sObjectId = oEvent.getParameter("arguments").objectId;
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
+
+			/* default first objectpagesection*/
+			let oDetailPage = this.getView().byId("DetailPage");
+			if(oDetailPage){
+				let oOpportunityInfoSection = this.byId("opportunityInfoId");
+				oDetailPage.setSelectedSection(oOpportunityInfoSection.getId());
+			}
+
 			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("PublicSalesOpportunities", {
 					ID: this.sObjectId
@@ -244,6 +252,7 @@ sap.ui.define([
 				oOpportunity.classification === "" ||
 				oOpportunity.institute_InstituteID === 0 ||
 				oOpportunity.tenderChannel === "" ||
+				oOpportunity.currency === "" ||
 				!oOpportunity.publicationDate ||
 				!oOpportunity.offerDueDate
 				) {
@@ -257,7 +266,8 @@ sap.ui.define([
 						'- Institute \n' +
 						'- Channel \n' +
 						'- Publication Date \n' +
-						'- Offer due Date \n',
+						'- Offer due Date \n'+
+						'- Currency \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -502,7 +512,7 @@ sap.ui.define([
 			}*/
 			
 			// Opportunity Info Tab
-			if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
+			/*if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
 				this.byId("editButtonId").setVisible(true);
 
 				let oNextUIState = "";
@@ -513,7 +523,7 @@ sap.ui.define([
 						objectId: this.sObjectId
 					});
 				}.bind(this));
-			}
+			}*/
 		},
 
 		/* Everything related to the add product functionality */
@@ -582,7 +592,7 @@ sap.ui.define([
 				this._valueHelpSelectBrandDialog = new sap.m.SelectDialog(this.createId("idValueHelpSelectBrandDialog"), {
 					title: "Brand Name",
 					multiSelect: true,
-					rememberSelections: true,
+					rememberSelections: false,
 					items: {
 						path: "soa>/countryBrands",
 						template: new sap.m.StandardListItem({

@@ -5,7 +5,7 @@
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:form="sap.ui.layout.form"
 	xmlns:layout="sap.ui.layout"
-	xmlns:core="sap.ui.core">
+	xmlns:core="sap.ui.core" >
 	<DynamicPage id="idDynamicPage" toggleHeaderOnTitleClick="false">
 		<title>
 			<DynamicPageTitle>
@@ -64,9 +64,17 @@
 					class="editableForm" visible="true">
 					<form:content>
 						<m:Label text="Recommended Price" />
-						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
+						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }" description="{soa>/selectedOpportunity/currency}"/>
 						<m:Label text="Requested Quantity" />
 						<m:Input value="{soa>/selectedProduct/requestedQuantity}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
+
+						<m:Label text="UoM" />
+						<m:Select id="idCurrency" 
+								  selectedKey="{soa>/selectedProduct/uom}"
+								  enabled="{= ${soa>/editMode} }">
+								<core:Item key="" text=""/>
+								<core:Item key="Packs" text="Packs"/>
+								<core:Item key="Units" text="Units"/>
 						<m:Label text="Division" />
 						<m:Select id="idSlctDivision" forceSelection="true" selectedKey="{soa>/selectedProduct/division}" enabled="{= ${soa>/editMode} === true }" >
 							<core:Item key="" text=""/>

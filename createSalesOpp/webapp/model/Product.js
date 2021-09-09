@@ -37,7 +37,8 @@ sap.ui.define([
                 "recommendedPrice",
                 "requestedQuantity",
                 "comment",
-                "opportunity_ID"
+                "opportunity_ID",
+                "uom",
             ]);
         },
 

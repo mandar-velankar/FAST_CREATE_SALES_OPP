@@ -151,6 +151,26 @@ sap.ui.define([
 			return this.odata(sPath).get(mParameters);
         },
 
+		getCountryCurrencies: function (sCountryCode) {
+            let sPath = "/CountryCurrency";
+
+            var aFilters = [];
+
+			if (sCountryCode) {
+				aFilters.push(new Filter({
+					path: 'COUNTRY_CODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode}));
+			}
+            
+			var mParameters = {
+				filters: aFilters
+			};
+            
+
+			return this.odata(sPath).get(mParameters);
+        },
+
 		loadCountryChannels: function (sCountry) {
 			const sCountryChannelsPath = "/CountryChannels";
 			var aFilters = [];
