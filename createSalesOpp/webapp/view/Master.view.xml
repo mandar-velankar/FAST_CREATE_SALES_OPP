@@ -33,9 +33,9 @@
 					<Label text="Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
-							<core:Item key="In" text="In"/>
-							<core:Item key="Out" text="Out"/>
-							<core:Item key="Participated" text="Participated"/>
+							<core:Item key="New" text="New"/>
+							<core:Item key="Declined" text="Declined"/>
+							<core:Item key="Active" text="Active"/>
 					</Select>
 
 					<!-- Filter for Substatus -->
@@ -47,6 +47,14 @@
 							<core:Item key="Quotation Submitted" text="Quotation Submitted"/>
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
+					</Select>
+					<!-- Filter for Division -->
+					<Label text="Division:" />
+					 <Select id="idSlctDivisionFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="" text=""/>
+							<core:Item key="Pharma" text="Pharma"/>
+							<core:Item key="Radiology" text="Radiology"/>
+							<core:Item key="Both" text="Both"/>
 					</Select>
 					<ToolbarSpacer/>
 					
@@ -95,6 +103,11 @@
 						</Column>
 						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
+								<ObjectIdentifier title="{i18n>division}" />
+							</header>
+						</Column>
+						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
 								<ObjectIdentifier title="{i18n>channel}" />
 							</header>
 						</Column>
@@ -116,6 +129,11 @@
 						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="{i18n>offrdudte}" />
+							</header>
+						</Column>
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>oppValue}" />
 							</header>
 						</Column>
 						<!-- <Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
@@ -145,6 +163,7 @@
 								<Text text="{CountryCode}"/>
 								<Text text="{TenderReference}"/>
 								<Text text="{Classification}"/>
+								<Text text="{Division}"/>
 								<Text text="{TenderChannel}"/>
 								<Text text="{MainStatus}"/>
 								<Text text="{SubStatus}"/>
@@ -164,6 +183,7 @@
 										}
 									}" 
 								/>
+								<Text text="{OpportunityValue}"/>
 								<!-- <Text text="{
 										path: 'NextPublicationDate',
 										type: 'sap.ui.model.type.Date',
@@ -174,7 +194,7 @@
 								/>
 								<Text text="{ContractLength}"/>
 								<Text text="{ExtensionPeriod}"/> -->
-								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
+								<Button text="{= ${MainStatus}==='Active'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
 					</items>

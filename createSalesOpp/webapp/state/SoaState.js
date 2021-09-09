@@ -253,7 +253,7 @@ sap.ui.define([
 			
 			
 			await this.loadCountryInstitutes(sCountryCode);
-			if (oSelectedOpportunity.mainStatus === "Participated" || (oSelectedObjectContext && oSelectedObjectContext.getProperty("MainStatus") === "Participated")) {
+			if (oSelectedOpportunity.mainStatus === "Active" || (oSelectedObjectContext && oSelectedObjectContext.getProperty("MainStatus") === "Active")) {
 				this.openTender(sTenderId);
 				return true;
 			}
@@ -312,7 +312,7 @@ sap.ui.define([
 					this._oParticipationDialog.close();
 
 					let opp = this.getSelectedOpportunity();
-					opp.mainStatus = "Participated";
+					opp.mainStatus = "Active";
 					this.setSelectedOpportunity(opp);
 					this.getModel().refresh();
 

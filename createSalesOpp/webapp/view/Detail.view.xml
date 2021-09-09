@@ -51,7 +51,7 @@
 				<!-- ACTIONS -->
 				<actions>
 					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress"  visible="{= !${soa>/creationMode} }"/>
-					<m:Button id="participateButtonId" icon="sap-icon://action" text="{= ${soa>/selectedOpportunity/mainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" visible="{= !${soa>/creationMode} }" />
+					<m:Button id="participateButtonId" icon="sap-icon://action" text="{= ${soa>/selectedOpportunity/mainStatus}==='Active'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" visible="{= !${soa>/creationMode} }" />
 					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
 				</actions>
 				
@@ -201,6 +201,9 @@
 									<m:Column >
 										<m:Label text="Brand" wrapping="true"/>  
 									</m:Column>
+									<m:Column >
+										<m:Label text="Division" wrapping="true"/>  
+									</m:Column>
 									<!--<m:Column >
 										<m:Label text="Code" wrapping="true"/>  
 									</m:Column>-->
@@ -236,6 +239,7 @@
 										detailPress="onProductItemSelect">
 										<m:cells>
 											<m:Text text="{soa>brandName}"/>
+											<m:Text text="{soa>division}"/>
 											<m:Text text="{soa>productPackName}"/>
 											<!--<m:Text id="productNameId" text="{soa>productName}"/> 
 											<m:Text text="{soa>uoM}"/>
