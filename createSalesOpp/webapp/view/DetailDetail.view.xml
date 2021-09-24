@@ -1,10 +1,10 @@
-<mvc:View
-	controllerName="com.bayer.tender.createsalesopportunity.controller.DetailDetail"
+<mvc:View controllerName="com.bayer.tender.createsalesopportunity.controller.DetailDetail"
 	xmlns="sap.f"
 	xmlns:m="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:form="sap.ui.layout.form"
-	xmlns:layout="sap.ui.layout">
+	xmlns:layout="sap.ui.layout"
+	xmlns:core="sap.ui.core">
 	<DynamicPage id="idDynamicPage" toggleHeaderOnTitleClick="false">
 		<title>
 			<DynamicPageTitle>
@@ -20,52 +20,49 @@
 				</actions>
 
 				<navigationActions>
-					<m:OverflowToolbarButton
-						type="Transparent"
-						icon="sap-icon://full-screen"
-						press=".handleFullScreen"
-						tooltip="Enter Full Screen Mode"
-						visible="{= !${detailDetailView>/actionButtonsInfo/fullScreen}}"/>
-					<m:OverflowToolbarButton
-						type="Transparent"
-						icon="sap-icon://exit-full-screen"
-						press=".handleExitFullScreen"
-						tooltip="Exit Full Screen Mode"
-						visible="{= ${detailDetailView>/actionButtonsInfo/fullScreen}}"/>
-					<m:OverflowToolbarButton
-						type="Transparent"
-						icon="sap-icon://decline"
-						press=".handleClose"
-						tooltip="Close column"
-						visible="{= ${detailDetailView>/actionButtonsInfo/endColumn/closeColumn} !== null }"/>
+					<m:OverflowToolbarButton type="Transparent" icon="sap-icon://full-screen" press=".handleFullScreen" tooltip="Enter Full Screen Mode" visible="{= !${detailDetailView>/actionButtonsInfo/fullScreen}}"/>
+					<m:OverflowToolbarButton type="Transparent" icon="sap-icon://exit-full-screen" press=".handleExitFullScreen" tooltip="Exit Full Screen Mode" visible="{= ${detailDetailView>/actionButtonsInfo/fullScreen}}"/>
+					<m:OverflowToolbarButton type="Transparent" icon="sap-icon://decline" press=".handleClose" tooltip="Close column" visible="{= ${detailDetailView>/actionButtonsInfo/endColumn/closeColumn} !== null }"/>
 				</navigationActions>
 			</DynamicPageTitle>
 		</title>
 
 		<header>
-				<DynamicPageHeader pinnable="true">
-					<layout:HorizontalLayout allowWrapping="true">
-						<layout:VerticalLayout class="sapUiMediumMarginEnd">
-							<m:ObjectAttribute title="Brand" text="{soa>/selectedProduct/brandName}"/>
-						</layout:VerticalLayout>
-					</layout:HorizontalLayout>
-					<layout:HorizontalLayout allowWrapping="true">
-						<layout:VerticalLayout class="sapUiMediumMarginEnd">
-							<m:ObjectAttribute title="Product" text="{soa>/selectedProduct/productPackName}"/>
-						</layout:VerticalLayout>
-					</layout:HorizontalLayout>
-				</DynamicPageHeader>
+			<DynamicPageHeader pinnable="true">
+				<layout:HorizontalLayout allowWrapping="true">
+					<layout:VerticalLayout class="sapUiMediumMarginEnd">
+						<m:ObjectAttribute title="Brand" text="{soa>/selectedProduct/brandName}"/>
+					</layout:VerticalLayout>
+				</layout:HorizontalLayout>
+				<layout:HorizontalLayout allowWrapping="true">
+					<layout:VerticalLayout class="sapUiMediumMarginEnd">
+						<m:ObjectAttribute title="Product" text="{soa>/selectedProduct/productPackName}"/>
+					</layout:VerticalLayout>
+				</layout:HorizontalLayout>
+			</DynamicPageHeader>
 		</header>
 
 		<content>
 			<m:VBox width="100%">
-				<form:SimpleForm  editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
-					class="editableForm" visible="true">
+				<form:SimpleForm editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1" class="editableForm" visible="true">
 					<form:content>
 						<m:Label text="Recommended Price" />
-						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
+						<m:Input value="{soa>/selectedProduct/recommendedPrice}" type="Number" enabled="{= ${soa>/editMode} === true }" description="{soa>/selectedOpportunity/currency}"/>
 						<m:Label text="Requested Quantity" />
 						<m:Input value="{soa>/selectedProduct/requestedQuantity}" type="Number" enabled="{= ${soa>/editMode} === true }"/>
+
+						<m:Label text="UoM" />
+						<m:Select id="idCurrency" selectedKey="{soa>/selectedProduct/uom}" enabled="{= ${soa>/editMode} }">
+							<core:Item key="" text=""/>
+							<core:Item key="Packs" text="Packs"/>
+							<core:Item key="Units" text="Units"/>
+						</m:Select>
+						<m:Label text="Division" />
+						<m:Select id="idSlctDivision" forceSelection="true" selectedKey="{soa>/selectedProduct/division}" enabled="{= ${soa>/editMode} === true }">
+							<core:Item key="" text=""/>
+							<core:Item key="Pharma" text="Pharma"/>
+							<core:Item key="Radiology" text="Radiology"/>
+						</m:Select>
 						<m:Label text="Comment" />
 						<m:TextArea value="{soa>/selectedProduct/comment}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 					</form:content>
