@@ -253,7 +253,7 @@ sap.ui.define([
 			
 			
 			await this.loadCountryInstitutes(sCountryCode);
-			if (oSelectedOpportunity.mainStatus === "Participated" || (oSelectedObjectContext && oSelectedObjectContext.getProperty("MainStatus") === "Participated")) {
+			if (oSelectedOpportunity.mainStatus === "Active" || (oSelectedObjectContext && oSelectedObjectContext.getProperty("MainStatus") === "Active")) {
 				this.openTender(sTenderId);
 				return true;
 			}
@@ -312,7 +312,7 @@ sap.ui.define([
 					this._oParticipationDialog.close();
 
 					let opp = this.getSelectedOpportunity();
-					opp.mainStatus = "Participated";
+					opp.mainStatus = "Active";
 					this.setSelectedOpportunity(opp);
 					this.getModel().refresh();
 
@@ -479,6 +479,7 @@ sap.ui.define([
 				"InstituteID": "",
 				"InstituteName": "",
 				"InstituteType": "Private",
+				"Currency": "",
 				"PublicationDate": "",
 				"BidDueDate": "",
 				"ExpectedAwardDate":null,
@@ -520,6 +521,7 @@ sap.ui.define([
 				"InstituteName": oDefaultInstitute ? oDefaultInstitute.InstituteName : "",
 				"TenderChannel": "Direct",
 				"InstituteType": oSelectedOpportunity.instituteType,
+				//"Currency": oSelectedOpportunity.currency,
 				"PublicationDate": oSelectedOpportunity.publicationDate,
 				"BidDueDate": oSelectedOpportunity.offerDueDate,
 				"AwardDate": oSelectedOpportunity.expectedAwardDate ? oSelectedOpportunity.expectedAwardDate : null,
@@ -610,6 +612,20 @@ sap.ui.define([
 		loadCountryInstitutes: async function(sCountry, sInstituteType){
 			const aCountryInstitutes = await this.getService().loadCountryInstitutes(sCountry, sInstituteType);
 			this.setProperty("CountryInstitutes", aCountryInstitutes.data.results);
+		},
+		
+		loadCountryCurrencies: async function (sCountry){
+			const aCountryCurrencies = await this.getService().getCountryCurrencies(sCountry);
+			if(aCountryCurrencies.data.results.length > 0){
+				//add empty line
+				var oEmptyCurrency = {
+					COUNTRY_CODE: '',
+					CURRENCY: '',
+					SORTER: 0
+				};
+				aCountryCurrencies.data.results.push(oEmptyCurrency);
+			}
+			this.setProperty("CountryCurrencies", aCountryCurrencies.data.results);
 		},
 
 		/* UI helpers */

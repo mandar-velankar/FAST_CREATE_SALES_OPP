@@ -31,12 +31,14 @@ sap.ui.define([
                 "iD",
                 "brandID",
                 "brandName",
+                "division",
                 "productPackName",
                 "productPackId",
                 "recommendedPrice",
                 "requestedQuantity",
                 "comment",
-                "opportunity_ID"
+                "opportunity_ID",
+                "uom",
             ]);
         },
 

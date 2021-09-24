@@ -20,22 +20,27 @@
 		<f:content>
 			<VBox fitContainer="true">
 			<OverflowToolbar class="sapFDynamicPageAlignContent">
+
 					<!-- Filter for Country -->
-					<Select id="idSlctCountry" forceSelection="true" items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
-							change=".setFilter">
+					<Label text="Country:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					<Select id="idSlctCountry"  items="{ path: 'soa>/countries', sorter: { path: 'countryName' } }"
+							change=".setFilter"
+							visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="{soa>countryCode}" text="{soa>countryName}"/>
 					</Select>
 
 					<!-- Filter for Status -->
-					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
+					<Label text="Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					<Select id="idSlctStatusFilter"  change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
-							<core:Item key="In" text="In"/>
-							<core:Item key="Out" text="Out"/>
-							<core:Item key="Participated" text="Participated"/>
+							<core:Item key="New" text="New"/>
+							<core:Item key="Declined" text="Declined"/>
+							<core:Item key="Active" text="Active"/>
 					</Select>
 
 					<!-- Filter for Substatus -->
-					 <Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
+					<Label text="Sub Status:" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					 <Select id="idSlctSubStatusFilter"  change=".setFilter" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
@@ -43,12 +48,19 @@
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
 					</Select>
+					<!-- Filter for Division -->
+					<Label text="Division:" />
+					 <Select id="idSlctDivisionFilter"  change=".setFilter">
+							<core:Item key="" text="Both"/>
+							<core:Item key="Pharma" text="Pharma"/>
+							<core:Item key="Radiology" text="Radiology"/>
+					</Select>
 					<ToolbarSpacer/>
 					
-					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
+					<SearchField id="idSearch" search=".setFilter" width="17.5rem" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<!-- Button for adding a new tender -->
-					<Button icon="sap-icon://add" text="Create New" press=".onAdd"/>
-					<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings"/>
+					<Button icon="sap-icon://add" text="Create New" press=".onAdd" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+					<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 				</OverflowToolbar>
 				<Table
 						id="list"
@@ -90,6 +102,11 @@
 						</Column>
 						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
+								<ObjectIdentifier title="{i18n>division}" />
+							</header>
+						</Column>
+						<Column width="11%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
 								<ObjectIdentifier title="{i18n>channel}" />
 							</header>
 						</Column>
@@ -115,6 +132,11 @@
 						</Column>
 						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
+								<ObjectIdentifier title="{i18n>oppValue}" />
+							</header>
+						</Column>
+						<!-- <Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
 								<ObjectIdentifier title="{i18n>nwpubdate}" />
 							</header>
 						</Column>
@@ -127,7 +149,7 @@
 							<header>
 								<ObjectIdentifier title="{i18n>contractExtension}" />
 							</header>
-						</Column>
+						</Column> -->
 						<Column width="5%" minScreenWidth="920px" demandPopin="false" popinDisplay="Inline" visible="{= ${appView>/layout} === 'OneColumn' }">
 							<header>
 								<Label text=""/>
@@ -140,6 +162,7 @@
 								<Text text="{CountryCode}"/>
 								<Text text="{TenderReference}"/>
 								<Text text="{Classification}"/>
+								<Text text="{Division}"/>
 								<Text text="{TenderChannel}"/>
 								<Text text="{MainStatus}"/>
 								<Text text="{SubStatus}"/>
@@ -159,7 +182,8 @@
 										}
 									}" 
 								/>
-								<Text text="{
+								<Text text="{OpportunityValue}"/>
+								<!-- <Text text="{
 										path: 'NextPublicationDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
@@ -168,8 +192,8 @@
 									}" 
 								/>
 								<Text text="{ContractLength}"/>
-								<Text text="{ExtensionPeriod}"/>
-								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
+								<Text text="{ExtensionPeriod}"/> -->
+								<Button text="{= ${MainStatus}==='Active'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
 					</items>

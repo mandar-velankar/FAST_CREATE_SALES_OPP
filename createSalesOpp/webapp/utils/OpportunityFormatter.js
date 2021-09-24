@@ -11,7 +11,7 @@ sap.ui.define(["sap/ui/core/MessageType", "sap/ui/core/IndicationColor"], functi
          */
         statusToColor: function (status, substatus) {
             let color = MessageType.None;
-            if (status && status === "Participated") {
+            if (status && status === "Active") {
                 switch (substatus) {
                     case "Draft": 
                         color = IndicationColor.Indication08;//"Grey"==> Purple;
