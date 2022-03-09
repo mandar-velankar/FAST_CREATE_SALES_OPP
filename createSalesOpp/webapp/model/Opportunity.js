@@ -96,7 +96,8 @@ sap.ui.define([
                 "tenderMatchingStatus",
                 "institute_InstituteID",
                 "institute_CountryCode",
-                "description"
+                "description",
+                "currency"
             ]);
         },
 
